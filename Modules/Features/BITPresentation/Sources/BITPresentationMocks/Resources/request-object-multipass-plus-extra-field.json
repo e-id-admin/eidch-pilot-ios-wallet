@@ -1,0 +1,71 @@
+{
+  "presentation_definition": {
+    "id": "582ec3a0-b976-4052-980f-3522ed0353a2",
+    "input_descriptors": [
+      {
+        "id": "Multipass",
+        "format": {
+          "jwt_vc": {
+            "alg": "ES512"
+          }
+        },
+        "constraints": {
+          "fields": [
+            {
+              "path": [
+                "$.vc.type[*]"
+              ],
+              "filter": {
+                "type": "string",
+                "pattern": "Multipass"
+              }
+            },
+            {
+              "path": [
+                "$.vc.credentialSubject.lastName"
+              ],
+              "filter": {
+                "type": "string",
+                "pattern": ".+"
+              }
+            },
+            {
+              "path": [
+                "$.vc.credentialSubject.extraField"
+              ],
+              "filter": {
+                "type": "string",
+                "pattern": ".+"
+              }
+            },
+            {
+              "path": [
+                "$.vc.credentialSubject.firstName"
+              ],
+              "filter": {
+                "type": "string",
+                "pattern": ".+"
+              }
+            },
+            {
+              "path": [
+                "$.vc.credentialSubject.dateOfBirth"
+              ],
+              "filter": {
+                "type": "string",
+                "pattern": "[0-9]{4}[0-1][0-9][0-3][0-9]"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "nonce": "95319ae6e05a49f6b1b868a52388c134",
+  "response_uri": "https://verifier.domain.ch/request-object/af3fe16e-3c77-4b35-a6d1-0f06657c4318/response-data",
+  "response_mode": "direct_post",
+  "client_metadata": {
+    "client_name": "Dummy Multipass",
+    "logo_uri": "https://image.noelshack.com/fichiers/2024/07/1/1707731598-flag.png"
+  }
+}

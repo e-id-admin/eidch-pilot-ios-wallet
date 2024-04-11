@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23D60" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CredentialClaimDisplayEntity" representedClassName="BITDataStore.CredentialClaimDisplayEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="locale" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="claim" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CredentialClaimEntity" inverseName="displays" inverseEntity="CredentialClaimEntity"/>
+    </entity>
+    <entity name="CredentialClaimEntity" representedClassName="BITDataStore.CredentialClaimEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="key" attributeType="String"/>
+        <attribute name="order" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="value" attributeType="String"/>
+        <attribute name="valueType" attributeType="String" defaultValueString="string"/>
+        <relationship name="credential" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CredentialEntity" inverseName="claims" inverseEntity="CredentialEntity"/>
+        <relationship name="displays" toMany="YES" deletionRule="Nullify" destinationEntity="CredentialClaimDisplayEntity" inverseName="claim" inverseEntity="CredentialClaimDisplayEntity"/>
+    </entity>
+    <entity name="CredentialDisplayEntity" representedClassName="BITDataStore.CredentialDisplayEntity" syncable="YES">
+        <attribute name="backgroundColor" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="locale" attributeType="String"/>
+        <attribute name="logoAltText" optional="YES" attributeType="String"/>
+        <attribute name="logoData" optional="YES" attributeType="Binary"/>
+        <attribute name="logoUrl" optional="YES" attributeType="URI"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="summary" optional="YES" attributeType="String"/>
+        <attribute name="textColor" optional="YES" attributeType="String"/>
+        <relationship name="credential" maxCount="1" deletionRule="Nullify" destinationEntity="CredentialEntity" inverseName="displays" inverseEntity="CredentialEntity"/>
+    </entity>
+    <entity name="CredentialEntity" representedClassName="BITDataStore.CredentialEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="status" attributeType="String" defaultValueString="valid"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="claims" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="CredentialClaimEntity" inverseName="credential" inverseEntity="CredentialClaimEntity"/>
+        <relationship name="displays" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CredentialDisplayEntity" inverseName="credential" inverseEntity="CredentialDisplayEntity"/>
+        <relationship name="issuerDisplays" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CredentialIssuerDisplayEntity" inverseName="credential" inverseEntity="CredentialIssuerDisplayEntity"/>
+        <relationship name="rawCredentials" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CredentialRawEntity" inverseName="credential" inverseEntity="CredentialRawEntity"/>
+    </entity>
+    <entity name="CredentialIssuerDisplayEntity" representedClassName="BITDataStore.CredentialIssuerDisplayEntity" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="locale" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="credential" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CredentialEntity" inverseName="issuerDisplays" inverseEntity="CredentialEntity"/>
+    </entity>
+    <entity name="CredentialRawEntity" representedClassName="BITDataStore.CredentialRawEntity" syncable="YES">
+        <attribute name="algorithm" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="format" attributeType="String"/>
+        <attribute name="payload" attributeType="Binary"/>
+        <attribute name="privateKeyIdentifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="credential" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CredentialEntity" inverseName="rawCredentials" inverseEntity="CredentialEntity"/>
+    </entity>
+</model>

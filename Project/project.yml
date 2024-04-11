@@ -1,0 +1,29 @@
+name: pilotWallet
+
+options:
+  developmentLanguage: de
+  deploymentTarget: [iOS]
+  generateEmptyDirectories: true
+  
+configs:
+  Dev (debug): debug
+  Dev (release): release
+  Ref (debug): debug
+  Ref (release): release
+  Prod (debug): debug
+  Prod (release): release
+
+fileGroups: [
+  "Project/project.yml",
+  "Project/packages.yml",
+  "Project/targets.yml",
+  "Project/schemes.yml",
+
+  "TestPlans/UnitTestPlan.xctestplan",
+  "TestPlans/UITestPlan.xctestplan",
+  "TestPlans/FullTestPlan.xctestplan",
+
+  "Modules",
+
+  "Makefile"
+]

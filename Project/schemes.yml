@@ -1,0 +1,63 @@
+schemes:
+  pilotWallet Dev:
+    build:
+      targets:
+        pilotWallet: all
+    run:
+      config: Dev (debug)
+    test:
+      testPlans:
+        - path: ../TestPlans/UnitTestPlan.xctestplan
+          defaultPlan: true
+        - path: ../TestPlans/UITestPlan.xctestplan
+        - path: ../TestPlans/FullTestPlan.xctestplan
+    profile:
+      config: Dev (release)
+    analyze:
+      config: Dev (debug)
+    archive:
+      config: Dev (release)
+      customArchiveName: pilotWallet-Dev
+      revealArchiveInOrganizer: true
+
+  pilotWallet Ref:
+    build:
+      targets:
+        pilotWallet: all
+    run:
+      config: Ref (debug)
+    test:
+      testPlans:
+        - path: ../TestPlans/UnitTestPlan.xctestplan
+          defaultPlan: true
+        - path: ../TestPlans/UITestPlan.xctestplan
+        - path: ../TestPlans/FullTestPlan.xctestplan
+    profile:
+      config: Ref (release)
+    analyze:
+      config: Ref (debug)
+    archive:
+      config: Ref (release)
+      customArchiveName: pilotWallet-Ref
+      revealArchiveInOrganizer: true
+
+  pilotWallet Prod:
+    build:
+      targets:
+        pilotWallet: all
+    run:
+      config: Prod (debug)
+    test:
+      testPlans:
+        - path: ../TestPlans/UnitTestPlan.xctestplan
+          defaultPlan: true
+        - path: ../TestPlans/UITestPlan.xctestplan
+        - path: ../TestPlans/FullTestPlan.xctestplan
+    profile:
+      config: Prod (release)
+    analyze:
+      config: Prod (debug)
+    archive:
+      config: Prod (release)
+      customArchiveName: pilotWallet-Prod
+      revealArchiveInOrganizer: true

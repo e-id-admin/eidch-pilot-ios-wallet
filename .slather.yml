@@ -1,0 +1,29 @@
+# .slather.yml
+
+ignore:
+  - pilotWalletTests/*
+  - pilotWalletUITests/*
+  - bin/*
+  - bitrise/*
+  - Carthage/*
+  - fastlane/*
+  - Pods/*
+  - ThirdParty/*
+  - Frameworks/*
+  - Packages/*
+  - pilotWallet/Resources/*
+  - pilotWallet/Preview Content/*
+  - "**/*Mock*.swift"
+  - "**/*Cell.swift"
+  - "**/*View.swift"
+  - "**/*ViewModifier.swift"
+  - "**/*.xib"
+  - "**/*Router.swift"
+  - "**/AppDelegate.swift"
+  - "**/SceneDelegate.swift"
+  - "**/AppDelegate+Injection.swift"
+  - "../../../Library/**/*"
+  - "**/*.storyboard"
+  - "**/Models/*"
+  - "**/Extensions/*"
+  - "**/Vendors/*"

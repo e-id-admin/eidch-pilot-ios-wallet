@@ -1,0 +1,283 @@
+targets:
+
+  pilotWallet:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: ../pilotWallet
+        excludes:
+          - "**/*.sh"
+    scheme:
+      testTargets:
+        - pilotWalletTests 
+    info:
+      path: ../pilotWallet/Info.plist
+      properties:
+        LSHasLocalizedDisplayName: true
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleDisplayName: $(APP_NAME)
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleInfoDictionaryVersion: '6.0'
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundlePackageType: $(PRODUCT_BUNDLE_PACKAGE_TYPE)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UIApplicationSupportsIndirectInputEvents: true
+        UIUserInterfaceStyle: Light
+        UILaunchScreen:
+            UIColorName: Launchscreen-background
+            UIImageName: Launchscreen-logo
+            UIImageRespectsSafeAreaInsets: false
+        UIRequiredDeviceCapabilities:
+            - armv7
+        UISupportedInterfaceOrientations:
+            - UIInterfaceOrientationPortrait
+
+        CFBundleURLTypes:
+            - CFBundleTypeRole: Editor
+              CFBundleURLName: openid-credential-offer
+              CFBundleURLSchemes: 
+                - openid-credential-offer
+
+        UILaunchStoryboardName:
+          LaunchScreen.storyboard
+
+        UIApplicationSceneManifest:
+            UIApplicationSupportsMultipleScenes: false
+            UISceneConfigurations:
+              UIWindowSceneSessionRoleApplication:
+                - UISceneConfigurationName: Default Configuration
+                  UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+
+        NSCameraUsageDescription: 'pilotWallet app would like to use your camera to scan QRCodes.'
+        NSFaceIDUsageDescription: 'pilotWallet app would like to use your biometric references to access secured resources.'
+
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+          NSExceptionDomains:
+            astra.admin.ch:
+              NSIncludesSubdomains: true
+
+    settings:
+      base:
+        DEVELOPMENT_TEAM: 2NG6YF3PM2
+        TARGETED_DEVICE_FAMILY: 1
+        CODE_SIGN_STYLE: Manual
+        SDKROOT: iphoneos
+        IPHONEOS_DEPLOYMENT_TARGET: 15.0
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1
+        SWIFT_VERSION: 5.7
+        PRODUCT_NAME: pilotWallet
+
+        ALWAYS_SEARCH_USER_PATHS: NO
+        CLANG_ANALYZER_NONNULL: YES
+        CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION: YES_AGGRESSIVE
+        CLANG_CXX_LANGUAGE_STANDARD: gnu++14
+        CLANG_CXX_LIBRARY: libc++
+        CLANG_ENABLE_MODULES: YES
+        CLANG_ENABLE_OBJC_ARC: YES
+        CLANG_ENABLE_OBJC_WEAK: YES
+        CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING: YES
+        CLANG_WARN_BOOL_CONVERSION: YES
+        CLANG_WARN_COMMA: YES
+        CLANG_WARN_CONSTANT_CONVERSION: YES
+        CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS: YES
+        CLANG_WARN_DIRECT_OBJC_ISA_USAGE: YES_ERROR
+        CLANG_WARN_DOCUMENTATION_COMMENTS: YES
+        CLANG_WARN_EMPTY_BODY: YES
+        CLANG_WARN_ENUM_CONVERSION: YES
+        CLANG_WARN_INFINITE_RECURSION: YES
+        CLANG_WARN_INT_CONVERSION: YES
+        CLANG_WARN_NON_LITERAL_NULL_CONVERSION: YES
+        CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF: YES
+        CLANG_WARN_OBJC_LITERAL_CONVERSION: YES
+        CLANG_WARN_OBJC_ROOT_CLASS: YES_ERROR
+        CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: YES
+        CLANG_WARN_RANGE_LOOP_ANALYSIS: YES
+        CLANG_WARN_STRICT_PROTOTYPES: YES
+        CLANG_WARN_SUSPICIOUS_MOVE: YES
+        CLANG_WARN_UNGUARDED_AVAILABILITY: YES_AGGRESSIVE
+        CLANG_WARN_UNREACHABLE_CODE: YES
+        CLANG_WARN__DUPLICATE_METHOD_MATCH: YES
+        COPY_PHASE_STRIP: NO
+        ENABLE_STRICT_OBJC_MSGSEND: YES
+        ENABLE_TESTING_SEARCH_PATHS: YES
+        GCC_C_LANGUAGE_STANDARD: gnu11
+        GCC_NO_COMMON_BLOCKS: YES
+        GCC_WARN_64_TO_32_BIT_CONVERSION: YES
+        GCC_WARN_ABOUT_RETURN_TYPE: YES_ERROR
+        GCC_WARN_UNDECLARED_SELECTOR: YES
+        GCC_WARN_UNINITIALIZED_AUTOS: YES_AGGRESSIVE
+        GCC_WARN_UNUSED_FUNCTION: YES
+        GCC_WARN_UNUSED_VARIABLE: YES
+        MTL_FAST_MATH: YES
+        ENABLE_BITCODE: NO
+
+      configs:
+        Dev (debug):
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon-DEV
+          PRODUCT_BUNDLE_IDENTIFIER: ch.admin.foitt.pilotwallet.dev
+          CODE_SIGN_IDENTITY: iPhone Developer
+          PROVISIONING_PROFILE_SPECIFIER: ADMIN_FOITT_DEV
+          ENABLE_TESTABILITY: true
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS:
+            - "DEBUG"
+            - "DEV"
+          DEBUG_INFORMATION_FORMAT: dwarf
+          ENABLE_TESTABILITY: YES
+          GCC_DYNAMIC_NO_PIC: NO
+          GCC_OPTIMIZATION_LEVEL: 0
+          GCC_PREPROCESSOR_DEFINITIONS: $(inherited)
+          MTL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE
+          ONLY_ACTIVE_ARCH: YES
+          SWIFT_OPTIMIZATION_LEVEL: -Onone
+
+        Ref (debug):
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon-REF
+          PRODUCT_BUNDLE_IDENTIFIER: ch.admin.foitt.pilotwallet.ref
+          CODE_SIGN_IDENTITY: iPhone Developer
+          PROVISIONING_PROFILE_SPECIFIER: ADMIN_FOITT_DEV
+          ENABLE_TESTABILITY: true
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS:
+            - "DEBUG"
+            - "REF"
+          DEBUG_INFORMATION_FORMAT: dwarf
+          ENABLE_TESTABILITY: YES
+          GCC_DYNAMIC_NO_PIC: NO
+          GCC_OPTIMIZATION_LEVEL: 0
+          GCC_PREPROCESSOR_DEFINITIONS: $(inherited)
+          MTL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE
+          ONLY_ACTIVE_ARCH: YES
+          SWIFT_OPTIMIZATION_LEVEL: -Onone
+
+        Prod (debug):
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+          PRODUCT_BUNDLE_IDENTIFIER: ch.admin.foitt.pilotwallet
+          CODE_SIGN_IDENTITY: iPhone Developer
+          PROVISIONING_PROFILE_SPECIFIER: ADMIN_FOITT_DEV
+          ENABLE_TESTABILITY: true
+          OPENID_REDIRECT_SCHEME: ch.admin.bit.pilotwallet
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS:
+            - "DEBUG"
+            - "PROD"
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_TESTABILITY: YES
+          GCC_DYNAMIC_NO_PIC: NO
+          GCC_OPTIMIZATION_LEVEL: 0
+          GCC_PREPROCESSOR_DEFINITIONS: $(inherited)
+          MTL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE
+          ONLY_ACTIVE_ARCH: YES
+          SWIFT_OPTIMIZATION_LEVEL: -Onone
+
+        Dev (release):
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon-DEV
+          PRODUCT_BUNDLE_IDENTIFIER: ch.admin.foitt.pilotwallet.dev
+          CODE_SIGN_IDENTITY: iPhone Distribution
+          PROVISIONING_PROFILE_SPECIFIER: match AppStore ch.admin.foitt.pilotwallet.dev
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS:
+            - "RELEASE"
+            - "PROD"
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_NS_ASSERTIONS: NO
+          MTL_ENABLE_DEBUG_INFO: NO
+          SWIFT_COMPILATION_MODE: wholemodule
+          SWIFT_OPTIMIZATION_LEVEL: -O
+
+        Ref (release):
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon-REF
+          PRODUCT_BUNDLE_IDENTIFIER: ch.admin.foitt.pilotwallet.ref
+          CODE_SIGN_IDENTITY: iPhone Distribution
+          PROVISIONING_PROFILE_SPECIFIER: match AppStore ch.admin.foitt.pilotwallet.ref
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS:
+            - "RELEASE"
+            - "REF"
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_NS_ASSERTIONS: NO
+          MTL_ENABLE_DEBUG_INFO: NO
+          SWIFT_COMPILATION_MODE: wholemodule
+          SWIFT_OPTIMIZATION_LEVEL: -O
+
+        Prod (release):
+          PRODUCT_NAME: "pilotWallet"
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+          PRODUCT_BUNDLE_IDENTIFIER: ch.admin.foitt.pilotwallet
+          CODE_SIGN_IDENTITY: iPhone Distribution
+          PROVISIONING_PROFILE_SPECIFIER: match AppStore ch.admin.foitt.pilotwallet
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS:
+            - "RELEASE"
+            - "PROD"
+          OPENID_REDIRECT_SCHEME: ch.admin.bit.pilotwallet
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_NS_ASSERTIONS: NO
+          MTL_ENABLE_DEBUG_INFO: NO
+          SWIFT_COMPILATION_MODE: wholemodule
+          SWIFT_OPTIMIZATION_LEVEL: -O
+
+    dependencies:
+      - package: Factory
+
+      - package: BITCore
+      - package: BITNavigation
+      - package: BITCrypto
+      - package: BITAppAuth
+      - package: BITQRScanner
+      - package: BITVault
+      - package: BITNetworking
+      - package: BITDataStore
+      - package: BITSettings
+      - package: BITAppVersion
+      - package: BITTheming
+      - package: BITOnboarding
+      - package: BITInvitation
+      - package: BITCredential
+      - package: BITDeeplink
+      - package: BITPresentation
+      - package: BITSdJWT
+      - package: BITHome
+      - package: BITLocalAuthentication
+
+    preBuildScripts:
+      - path: ../Scripts/format_generated_files.sh
+        name: Format generated files
+        inputFiles:
+          - $(SRCROOT)/pilotWallet/Resources/Assets.swift
+        outputFiles:
+          - "/tmp/pilotWalletDummyOutputFileFormatGeneratedFiles.txt"
+      - path: ../Scripts/swiftlint.sh
+        name: SwiftLint
+        outputFiles:
+          - "/tmp/pilotWalletDummyOutputFileSwiftLint.txt"
+      - path: ../Scripts/swiftformat.sh
+        name: SwiftFormat
+        outputFiles:
+          - "/tmp/pilotWalletDummyOutputFileSwiftFormat.txt"
+      - path: ../Scripts/xcode_formatting.sh
+        name: xCode formatting
+        outputFiles:
+          - "/tmp/pilotWalletDummyOutputFileXcodeFormatting.txt"
+      - path: ../Scripts/swift_package_list.sh
+        name: Swift packages list
+        outputFiles:
+          - "/tmp/pilotWalletDummyOutputFileSwiftPackagesList.txt"
+
+
+  pilotWalletTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources: ../pilotWalletTests
+    dependencies:
+      - target: pilotWallet
+    settings:
+      base:
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/pilotWallet.app/pilotWallet
+    info:
+      path: ../pilotWalletTests/Info.plist
+      properties:
+          CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+          CFBundleShortVersionString: $(MARKETING_VERSION)

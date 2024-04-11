@@ -1,0 +1,17 @@
+xcassets:
+  inputs:
+    - Sources/BITCore/Resources/CoreAssets.xcassets
+  outputs:
+    - templateName: swift5
+      output: Sources/BITCore/Module/CoreAssets.swift
+      params:
+        enumName: CoreAssets
+        publicAccess: true
+
+strings:
+  inputs: Sources/BITCore/Resources/de.lproj
+  outputs:
+    - templateName: structured-swift5
+      output: Sources/BITCore/Module/Strings.swift
+      params:
+        publicAccess: true

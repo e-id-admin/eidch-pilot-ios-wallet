@@ -1,0 +1,49 @@
+{
+   "presentation_definition":{
+      "id":"09391860-fd75-4bc9-9250-732013250678",
+      "input_descriptors":[
+         {
+            "id":"Multipass",
+            "format":{
+               "jwt_vc":{
+                  "alg":"ES512"
+               }
+            },
+            "constraints":{
+               "fields":[
+                  {
+                     "filter":{
+                        "type":"string",
+                        "pattern":"Multipass"
+                     },
+                     "path":[
+                        "$.vc.type[*]"
+                     ]
+                  },
+                  {
+                     "path":[
+                        "$.vc.credentialSubject.lastName"
+                     ]
+                  },
+                  {
+                     "path":[
+                        "$.vc.credentialSubject.firstName"
+                     ]
+                  },
+                  {
+                     "path":[
+                        "$.vc.credentialSubject.dateOfBirth"
+                     ]
+                  }
+               ]
+            }
+         }
+      ]
+   },
+   "response_uri":"https://verifier.domain.ch/request-object/25ee0f2f-b337-4d62-9a3e-b72280440af0/response-data",
+   "nonce":"0340e22cc02c4202a05015b0766e99e7",
+   "client_metadata": {
+     "client_name": "Dummy Multipass",
+     "logo_uri": "https://image.noelshack.com/fichiers/2024/07/1/1707731598-flag.png"
+   }
+}

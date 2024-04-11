@@ -1,0 +1,168 @@
+{
+  "configurations" : [
+    {
+      "id" : "AE9561D1-26AB-48DF-B5D6-6126DA0FC731",
+      "name" : "Configuration 1",
+      "options" : {
+        "testRepetitionMode" : "none"
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testRepetitionMode" : "retryOnFailure"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:pilotWallet.xcodeproj",
+        "identifier" : "0852CE96DC7B17BEE03C96D2",
+        "name" : "pilotWalletTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITCore",
+        "identifier" : "BITCoreTests",
+        "name" : "BITCoreTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITCredential",
+        "identifier" : "BITCredentialTests",
+        "name" : "BITCredentialTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITCrypto",
+        "identifier" : "BITCryptoTests",
+        "name" : "BITCryptoTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITInvitation",
+        "identifier" : "BITInvitationTests",
+        "name" : "BITInvitationTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITQRScanner",
+        "identifier" : "BITQRScannerTests",
+        "name" : "BITQRScannerTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITOnboarding",
+        "identifier" : "BITOnboardingTests",
+        "name" : "BITOnboardingTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITTheming",
+        "identifier" : "BITThemingTests",
+        "name" : "BITThemingTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITSettings",
+        "identifier" : "BITSettingsTests",
+        "name" : "BITSettingsTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITAppVersion",
+        "identifier" : "BITAppVersionTests",
+        "name" : "BITAppVersionTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITNetworking",
+        "identifier" : "BITNetworkingTests",
+        "name" : "BITNetworkingTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITVault",
+        "identifier" : "BITVaultTests",
+        "name" : "BITVaultTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITAppAuth",
+        "identifier" : "BITAppAuthTests",
+        "name" : "BITAppAuthTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITDataStore",
+        "identifier" : "BITDataStoreTests",
+        "name" : "BITDataStoreTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITPresentation",
+        "identifier" : "BITPresentationTests",
+        "name" : "BITPresentationTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITDeeplink",
+        "identifier" : "BITDeeplinkTests",
+        "name" : "BITDeeplinkTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITSdJWT",
+        "identifier" : "BITSdJWTTests",
+        "name" : "BITSdJWTTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITHome",
+        "identifier" : "BITHomeTests",
+        "name" : "BITHomeTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITLocalAuthentication",
+        "identifier" : "BITLocalAuthenticationTests",
+        "name" : "BITLocalAuthenticationTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,0 +1,46 @@
+packages:
+  Factory:
+    url: https://github.com/hmlongco/Factory
+    from: "2.1.4"
+
+  BITCore:
+    path: Modules/Platforms/BITCore
+  BITNavigation:
+    path: Modules/Platforms/BITNavigation
+  BITCrypto:
+    path: Modules/Platforms/BITCrypto
+  BITQRScanner:
+    path: Modules/Platforms/BITQRScanner
+  BITNetworking:
+    path: Modules/Platforms/BITNetworking
+  BITTheming:
+    path: Modules/Platforms/BITTheming
+  BITNetworking:
+    path: Modules/Platforms/BITNetworking
+  BITVault:
+    path: Modules/Platforms/BITVault
+  BITDataStore:
+    path: Modules/Platforms/BITDataStore
+  BITDeeplink:
+    path: Modules/Platforms/BITDeeplink
+  BITSdJWT:
+    path: Modules/Platforms/BITSdJWT
+  BITLocalAuthentication:
+    path: Modules/Platforms/BITLocalAuthentication
+
+  BITAppAuth:
+    path: Modules/Features/BITAppAuth
+  BITSettings:
+    path: Modules/Features/BITSettings
+  BITAppVersion:
+    path: Modules/Features/BITAppVersion
+  BITOnboarding:
+    path: Modules/Features/BITOnboarding
+  BITInvitation:
+    path: Modules/Features/BITInvitation
+  BITCredential:
+    path: Modules/Features/BITCredential
+  BITPresentation:
+    path: Modules/Features/BITPresentation
+  BITHome:
+    path: Modules/Features/BITHome

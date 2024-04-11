@@ -1,0 +1,16 @@
+xcassets:
+  inputs:
+    - Sources/BITAppAuth/Resources/Assets.xcassets
+  outputs:
+    - templateName: swift5
+      output: Sources/BITAppAuth/Module/Assets.swift
+      params:
+        enumName: Assets
+
+strings:
+  inputs: Sources/BITAppAuth/Resources/de.lproj
+  outputs:
+    - templateName: structured-swift5
+      output: Sources/BITAppAuth/Module/Strings.swift
+      params:
+        publicAccess: true

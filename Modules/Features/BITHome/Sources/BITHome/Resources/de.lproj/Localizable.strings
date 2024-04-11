@@ -1,0 +1,10 @@
+"credential_detail_title" = "Nachweisinfo";
+"home_qr_code_scan_button" = "Scannen";
+"home_empty_view_no_credentials_title" = "Ihr erster elektronischer Lernfahrausweis";
+"home_empty_view_no_credentials_intro_text" = "Schön, dass Sie beim Piloten zum elektronischen Lernfahrausweis in Appenzell Ausserrhoden dabei sind.";
+"home_empty_view_no_credentials_more_info_text" = "Weitere Informationen";
+"home_empty_view_no_credentials_more_info_link" = "https://www.eid.admin.ch/de/pilotprojekte";
+"home_empty_view_no_credentials_scan_text" = "Gratulation zur Theorieprüfung 🎉 Bitte SMS-Link anklicken oder QR-Code scannen, damit Sie Ihren elektronischen Lernfahrausweis in Ihre pilotWallet erhalten.";
+"home_empty_view_no_credentials_qr_code_text" = "Ich habe keine SMS oder QR-Code erhalten.";
+"home_empty_view_no_credentials_scan_link" = "https://forms.eid.admin.ch/elfa";
+"home_empty_view_had_credentials_text" = "Ihre Wallet ist leer. Bitte wenden Sie sich an das Strassenverkehrsamt Appenzell Ausserrhoden.";

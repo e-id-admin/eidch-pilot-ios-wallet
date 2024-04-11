@@ -1,0 +1,39 @@
+{
+   "presentation_definition":{
+      "id":"9c125ab8-290a-42e7-9bb2-74dd9f7423ef",
+      "input_descriptors":[
+         {
+            "constraints":{
+               "fields":[
+                  {
+                     "path":[
+                        "$.vc.type[*]"
+                     ],
+                     "filter":{
+                        "type":"string",
+                        "pattern":"UniversityDegreeCredential"
+                     }
+                  },
+                  {
+                     "path":[
+                        "$.vc.credentialSubject.degree.average_grade"
+                     ]
+                  }
+               ]
+            },
+            "format":{
+               "jwt_vc":{
+                  "alg":"ES512"
+               }
+            },
+            "id":"Bachelors Degree"
+         }
+      ]
+   },
+   "nonce":"f2d1bc34e26d42ca802e86775acd5c44",
+   "response_uri":"https:\\/\\/verifier.domain.ch\\/request-object\\/3f971446-fc0b-488e-9911-169bd5c9ed78\\/response-data",
+   "client_metadata": {
+     "client_name": "Dummy University",
+     "logo_uri": "https://image.noelshack.com/fichiers/2024/07/1/1707731598-flag.png"
+   }
+}

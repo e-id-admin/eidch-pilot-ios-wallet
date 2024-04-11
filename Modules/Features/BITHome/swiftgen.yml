@@ -1,0 +1,14 @@
+xcassets:
+ inputs:
+   - Sources/BITHome/Resources/HomeAssets.xcassets
+ outputs:
+   - templateName: swift5
+     output: Sources/BITHome/Module/HomeAssets.swift
+     params:
+       enumName: HomeAssets
+
+strings:
+  inputs: Sources/BITHome/Resources/de.lproj
+  outputs:
+    - templateName: structured-swift5
+      output: Sources/BITHome/Module/Strings.swift
