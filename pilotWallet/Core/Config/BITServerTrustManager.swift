@@ -18,10 +18,10 @@ class BITServerTrustManager: WildcardServerTrustManager {
   // MARK: Private
 
   private static func createEvaluator(_ evaluator: TrustEvaluator) -> (String, ServerTrustEvaluating)? {
-    guard let certificate = CertificateLoader.loadCertificate(named: evaluator.certificate, withExtension: evaluator.certificateExtension, from: .main) else {
-      return nil
+    let secCertificates = evaluator.certificate.compactMap { certificateName in
+      CertificateLoader.loadDERCertificate(named: certificateName.rawValue, from: .main)
     }
-    return (evaluator.domain, PinnedCertificatesTrustEvaluator(certificates: [certificate]))
+    return (evaluator.domain.rawValue, PinnedCertificatesTrustEvaluator(certificates: secCertificates))
   }
 }
 
@@ -33,20 +33,25 @@ extension BITServerTrustManager {
 
     // MARK: Internal
 
-    var domain: String {
+    var domain: Domain {
       switch self {
-      case .admin: "*.astra.admin.ch"
+      case .admin: Domain.astraAdminCh
       }
     }
 
-    var certificate: String {
+    var certificate: [Certificate] {
       switch self {
-      case .admin: "QuoVadisRootCA2G3"
+      case .admin: Certificate.allCases
       }
     }
+  }
 
-    var certificateExtension: String {
-      "der"
-    }
+  fileprivate enum Domain: String, CaseIterable {
+    case astraAdminCh = "*.astra.admin.ch"
+  }
+
+  fileprivate enum Certificate: String, CaseIterable {
+    case quoVadisRootCA2G3 = "QuoVadisRootCA2G3"
+    case digiCertGlobalRootG2 = "DigiCertGlobalRootG2"
   }
 }

@@ -1,7 +1,7 @@
 # pilotWallet - iOS
 
 <div align="left">
-<img src="https://github.com/foitt/bit_swisswallet_app_ios/raw/develop/pilotWallet/Resources/Assets.xcassets/AppIcon.appiconset/1024x1024_pilotWallet.png?raw=true" width="200" />
+<img src="./Resources/pilotWalletLogo.png?raw=true" width="200" />
 </div>
 
 An official Swiss Government project made by the [Federal Office of Information Technology, Systems and Telecommunication FOITT](https://www.bit.admin.ch/)
@@ -9,7 +9,7 @@ as part of the electronic identity (E-ID) project.
 
 <div align="left">
 <a href='https://apps.apple.com/app/id6478277720' target='_blank'>
-<img alt='Download on theApp Store' src='./DownloadAppStoreLogo.png' width="200" />
+<img alt='Download on the App Store' src='./Resources/downloadOnAppStoreLogo.png?raw=true' width="200" />
 </a>
 </div>
 
