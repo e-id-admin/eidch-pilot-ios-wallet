@@ -19,6 +19,7 @@ let package = Package(
     .package(path: "../BITAppVersion"),
     .package(path: "../../Platforms/BITTheming"),
     .package(path: "../../Platforms/BITCore"),
+    .package(path: "../../Platforms/BITAnalytics"),
     .package(url: "https://github.com/hmlongco/Factory", exact: "2.2.0"),
   ],
   targets: [
@@ -29,6 +30,7 @@ let package = Package(
         .product(name: "BITAppAuth", package: "BITAppAuth"),
         .product(name: "BITTheming", package: "BITTheming"),
         .product(name: "BITAppVersion", package: "BITAppVersion"),
+        .product(name: "BITAnalytics", package: "BITAnalytics"),
         .product(name: "Factory", package: "Factory"),
       ],
       resources: [.process("Resources")]),

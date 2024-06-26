@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "8ca11a7bd1ede031e8e6d7a912bb116e2e43961b",
-        "version" : "2.3.1"
+        "revision" : "061b3afe0358a0da7ce568f8272c847910be3dd7",
+        "version" : "2.2.0"
       }
     },
     {
@@ -126,6 +126,15 @@
       }
     },
     {
+      "identity" : "swift-mobile-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Dynatrace/swift-mobile-sdk.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c44b50bc99603a2d7bc0256815ea85eff6661c56"
+      }
+    },
+    {
       "identity" : "swift-spyable",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Matejkob/swift-spyable",
@@ -147,8 +156,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/siteline/swiftui-introspect",
       "state" : {
-        "revision" : "18e965f867e37a558ad13c12d330dbe047099180",
-        "version" : "1.1.2"
+        "revision" : "9e1cc02a65b22e09a8251261cccbccce02731fc5",
+        "version" : "1.1.1"
       }
     }
   ],

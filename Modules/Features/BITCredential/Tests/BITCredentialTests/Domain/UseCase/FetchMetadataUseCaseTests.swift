@@ -1,7 +1,10 @@
 import Spyable
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITTestingCore
 
 final class FetchMetadataUseCaseTests: XCTestCase {

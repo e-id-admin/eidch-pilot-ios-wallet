@@ -23,6 +23,7 @@ typealias AssetImageTypeAlias = ImageAsset.Image
 // swiftlint:disable identifier_name line_length nesting type_body_length type_name
 enum Assets {
   static let deleteCredential = ImageAsset(name: "DeleteCredential")
+  static let noActivities = ImageAsset(name: "NoActivities")
   static let federalLogo = ImageAsset(name: "federal-logo")
 }
 

@@ -9,10 +9,14 @@ struct PinCodeManager: PinCodeManagerProtocol {
   public init(
     pinCodeSize: Int = Container.shared.pinCodeSize(),
     encrypter: Encryptable = Container.shared.encrypter(),
+    encrypterLength: Int = Container.shared.encrypterLength(),
+    pepperKeyDerivationAlgorithm: SecKeyAlgorithm = Container.shared.pepperKeyDerivationAlgorithm(),
     pepperRepository: PepperRepositoryProtocol = Container.shared.pepperRepository())
   {
     self.pinCodeSize = pinCodeSize
     self.encrypter = encrypter
+    self.encrypterLength = encrypterLength
+    self.pepperKeyDerivationAlgorithm = pepperKeyDerivationAlgorithm
     self.pepperRepository = pepperRepository
   }
 
@@ -33,10 +37,11 @@ struct PinCodeManager: PinCodeManagerProtocol {
     let pepperKey = try pepperRepository.getPepperKey()
     let initialVector = try pepperRepository.getPepperInitialVector()
     let pinData = try pinCode.asData()
-
-    return try encrypter.encryptWithDerivedKey(
-      fromPrivateKey: pepperKey,
-      data: pinData,
+    return try encrypter.encrypt(
+      pinData,
+      withAsymmetricKey: pepperKey,
+      length: encrypterLength,
+      derivationAlgorithm: pepperKeyDerivationAlgorithm,
       initialVector: initialVector)
   }
 
@@ -44,6 +49,8 @@ struct PinCodeManager: PinCodeManagerProtocol {
 
   private let pinCodeSize: Int
   private let encrypter: Encryptable
+  private let encrypterLength: Int
+  private let pepperKeyDerivationAlgorithm: SecKeyAlgorithm
   private let pepperRepository: PepperRepositoryProtocol
 
   private func validateBasics(_ pinCode: PinCode) throws {

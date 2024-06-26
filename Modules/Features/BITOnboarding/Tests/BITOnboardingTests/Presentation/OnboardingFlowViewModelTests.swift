@@ -4,6 +4,7 @@ import XCTest
 
 @testable import BITAppAuth
 @testable import BITOnboarding
+@testable import BITSettings
 
 @MainActor
 final class OnboardingFlowViewModelTests: XCTestCase {
@@ -20,6 +21,7 @@ final class OnboardingFlowViewModelTests: XCTestCase {
     requestBiometricAuthUseCase = RequestBiometricAuthUseCaseProtocolSpy()
     allowBiometricUsageUseCase = AllowBiometricUsageUseCaseProtocolSpy()
     onboardingSuccessUseCase = OnboardingSuccessUseCaseProtocolSpy()
+    updatePrivacyPolicyUseCase = UpdateAnalyticStatusUseCaseProtocolSpy()
 
     viewModel = OnboardingFlowViewModel(
       routes: OnboardingRouter(),
@@ -28,7 +30,8 @@ final class OnboardingFlowViewModelTests: XCTestCase {
       registerPinCodeUseCase: registerPinCodeUseCase,
       requestBiometricAuthUseCase: requestBiometricAuthUseCase,
       allowBiometricUsageUseCase: allowBiometricUsageUseCase,
-      onboardingSuccessUseCase: onboardingSuccessUseCase)
+      onboardingSuccessUseCase: onboardingSuccessUseCase,
+      updatePrivacyPolicyUseCase: updatePrivacyPolicyUseCase)
   }
 
   // MARK: Internal
@@ -50,6 +53,7 @@ final class OnboardingFlowViewModelTests: XCTestCase {
     XCTAssertFalse(onboardingSuccessUseCase.executeCalled)
     XCTAssertTrue(getBiometricTypeUseCase.executeCalled)
     XCTAssertTrue(hasBiometricAuthUseCase.executeCalled)
+    XCTAssertFalse(updatePrivacyPolicyUseCase.executeIsAllowedCalled)
   }
 
   func testInitStepQrCode() {
@@ -186,6 +190,20 @@ final class OnboardingFlowViewModelTests: XCTestCase {
     XCTAssertEqual(hasBiometricAuthUseCase.executeCallsCount, 1)
   }
 
+  func testAcceptPrivacyPolicy() async {
+    await viewModel.acceptPrivacyPolicy()
+
+    XCTAssertTrue(updatePrivacyPolicyUseCase.executeIsAllowedCalled)
+    XCTAssertEqual(updatePrivacyPolicyUseCase.executeIsAllowedReceivedInvocations.first, true)
+  }
+
+  func testDeclinePrivacyPolicy() async {
+    await viewModel.declinePrivacyPolicy()
+
+    XCTAssertTrue(updatePrivacyPolicyUseCase.executeIsAllowedCalled)
+    XCTAssertEqual(updatePrivacyPolicyUseCase.executeIsAllowedReceivedInvocations.first, false)
+  }
+
   // MARK: Private
 
   // swiftlint:disable all
@@ -195,6 +213,7 @@ final class OnboardingFlowViewModelTests: XCTestCase {
   private var requestBiometricAuthUseCase: RequestBiometricAuthUseCaseProtocolSpy!
   private var allowBiometricUsageUseCase: AllowBiometricUsageUseCaseProtocolSpy!
   private var onboardingSuccessUseCase: OnboardingSuccessUseCaseProtocolSpy!
+  private var updatePrivacyPolicyUseCase: UpdateAnalyticStatusUseCaseProtocolSpy!
   private var viewModel: OnboardingFlowViewModel!
 
   private let pin: PinCode = "123456"

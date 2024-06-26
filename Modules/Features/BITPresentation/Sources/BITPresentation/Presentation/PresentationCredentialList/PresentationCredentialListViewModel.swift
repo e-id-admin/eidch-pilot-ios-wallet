@@ -1,5 +1,4 @@
 import BITCore
-import BITCredential
 import Combine
 import Foundation
 

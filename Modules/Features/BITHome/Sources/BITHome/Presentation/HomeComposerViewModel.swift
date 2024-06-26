@@ -1,5 +1,8 @@
+import BITActivity
+import BITAnalytics
 import BITCore
 import BITCredential
+import BITCredentialShared
 import BITDataStore
 import Combine
 import CoreData
@@ -21,7 +24,9 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
     notificationCenter: NotificationCenter = NotificationCenter.default,
     getCredentialListUseCase: GetCredentialListUseCaseProtocol = Container.shared.getCredentialListUseCase(),
     hasDeletedCredentialUseCase: HasDeletedCredentialUseCaseProtocol = Container.shared.hasDeletedCredentialUseCase(),
-    checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol = Container.shared.checkAndUpdateCredentialStatusUseCase())
+    checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol = Container.shared.checkAndUpdateCredentialStatusUseCase(),
+    getLastActivityUseCase: GetLastActivityUseCaseProtocol = Container.shared.getLastActivityUseCase(),
+    analytics: AnalyticsProtocol = Container.shared.analytics())
   {
     self.credentials = credentials
     self.isScannerPresented = isScannerPresented
@@ -31,6 +36,8 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
     self.checkAndUpdateCredentialStatusUseCase = checkAndUpdateCredentialStatusUseCase
     self.routes = routes
     self.notificationCenter = notificationCenter
+    self.analytics = analytics
+    self.getLastActivityUseCase = getLastActivityUseCase
 
     super.init(initialState)
     registerNotifications()
@@ -46,8 +53,9 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
   }
 
   public enum Event {
-    case fetch
-    case setCredentials(_ credentials: [Credential])
+    case fetchCredentials
+    case didFetchCredentials(_ credentials: [Credential])
+    case didFetchLastActivity(_ activity: Activity?)
     case checkCredentialsStatus
     case didCheckCredentialsStatus
     case didCheckCredentialsStatusWithError(_ error: Error)
@@ -55,26 +63,21 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
     case refresh
 
     case setError(_ error: Error)
-    case void
     case checkHasDeletedCredential
   }
 
-  @Published public var credentials: [Credential] = []
-  @Published public var isScannerPresented: Bool = false
-  @Published public var isMenuPresented: Bool = false
-
   override public func reducer(_ state: inout State, _ event: Event) -> AnyPublisher<Event, Never>? {
     switch (state, event) {
-    case (_, .fetch):
-      return AnyPublisher.run({ [weak self] in
-        try await self?.fetch()
-      }) { _ in
-        .void
+    case (_, .fetchCredentials):
+      return AnyPublisher.run {
+        try await self.getCredentialListUseCase.execute()
+      } onSuccess: { credentials in
+        .didFetchCredentials(credentials)
       } onError: { error in
         .setError(error)
       }
 
-    case (_, .setCredentials(let credentials)):
+    case (_, .didFetchCredentials(let credentials)):
       stateError = nil
 
       if self.credentials.isEmpty && credentials.isEmpty {
@@ -82,11 +85,18 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
       }
 
       self.credentials = credentials
-
       state = .results
 
+      return AnyPublisher.run {
+        try await self.getLastActivityUseCase.execute()
+      } onSuccess: { activity in
+        .didFetchLastActivity(activity)
+      } onError: { error in
+        .setError(error)
+      }
+
     case (_, .refresh):
-      return Just(.fetch).eraseToAnyPublisher()
+      return Just(.fetchCredentials).eraseToAnyPublisher()
 
     case (_, .checkCredentialsStatus):
       return AnyPublisher.run {
@@ -94,7 +104,8 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
       } onSuccess: { _ in
         .didCheckCredentialsStatus
       } onError: { error in
-        .didCheckCredentialsStatusWithError(error)
+        self.analytics.log(error)
+        return .didCheckCredentialsStatusWithError(error)
       }
 
     case (_, .didCheckCredentialsStatus),
@@ -102,20 +113,56 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
       return nil
 
     case (_, .setError(let error)):
+      analytics.log(error)
       if credentials.isEmpty {
         state = .error
+        lastActivity = nil
       }
       stateError = error
-
-    case (_, .void):
-      break
 
     case (_, .checkHasDeletedCredential):
       let hasDeletedCredential = hasDeletedCredentialUseCase.execute()
       state = hasDeletedCredential ? .emptyWithDeletedCredential : .emptyWithoutDeletedCredential
+
+    case (_, .didFetchLastActivity(let activity)):
+      lastActivity = activity
+
+      guard let activity else {
+        return nil
+      }
+
+      // Create a new instance to not have the view tight to the activity credential
+      lastActivityCredential = activity.credential.copy()
     }
 
     return nil
+  }
+
+  // MARK: Internal
+
+  var lastActivityCredential: Credential?
+  @Published var credentials: [Credential] = []
+  @Published var isScannerPresented: Bool = false
+  @Published var isMenuPresented: Bool = false
+  @Published var isCredentialDetailPresented = false
+  @Published var lastActivity: Activity?
+  @Published var isActivityDetailPresented: Bool = false
+  @Published var isActivitiesListPresented: Bool = false
+
+  func showCredentialDetails() {
+    isCredentialDetailPresented = true
+  }
+
+  func showActivitiesList() {
+    isActivitiesListPresented = true
+  }
+
+  func showActivityDetails() {
+    guard lastActivity?.type != .credentialReceived else {
+      return
+    }
+
+    isActivityDetailPresented = true
   }
 
   // MARK: Private
@@ -126,12 +173,8 @@ public class HomeViewModel: StateMachine<HomeViewModel.State, HomeViewModel.Even
   private let getCredentialListUseCase: GetCredentialListUseCaseProtocol
   private let hasDeletedCredentialUseCase: HasDeletedCredentialUseCaseProtocol
   private let checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol
-
-  private func fetch() async throws {
-    async let credentials = try getCredentialListUseCase.execute()
-
-    try await send(event: .setCredentials(credentials))
-  }
+  private let getLastActivityUseCase: GetLastActivityUseCaseProtocol
+  private let analytics: AnalyticsProtocol
 
   private func registerNotifications() {
     let managedObjectContext = Container.shared.dataStore().managedContext

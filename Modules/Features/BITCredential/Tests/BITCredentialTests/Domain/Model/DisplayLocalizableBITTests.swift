@@ -1,7 +1,11 @@
 import BITCore
 import Factory
 import XCTest
-@testable import BITCredential
+
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
+
+//@testable import BITCredential
 
 /// BIT Logic to be reactivated later in DisplayLocalizable
 extension Array where Element: DisplayLocalizable {

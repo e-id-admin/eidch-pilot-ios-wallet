@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITVault
 import Factory
 import Foundation
@@ -16,11 +17,11 @@ public struct DeleteCredentialUseCase: DeleteCredentialUseCaseProtocol {
 
   init(
     databaseRepository: CredentialRepositoryProtocol = Container.shared.databaseCredentialRepository(),
-    vault: VaultProtocol = Container.shared.vault(),
+    keyManager: KeyManagerProtocol = Container.shared.keyManager(),
     hasDeletedCredentialRepository: HasDeletedCredentialRepositoryProtocol = Container.shared.hasDeletedCredentialRepository())
   {
     self.databaseRepository = databaseRepository
-    self.vault = vault
+    self.keyManager = keyManager
     self.hasDeletedCredentialRepository = hasDeletedCredentialRepository
   }
 
@@ -36,7 +37,7 @@ public struct DeleteCredentialUseCase: DeleteCredentialUseCaseProtocol {
       }
 
       do {
-        try vault.deletePrivateKey(
+        try keyManager.deleteKeyPair(
           withIdentifier: rawCredential.privateKeyIdentifier.uuidString,
           algorithm: algorithm)
       } catch {
@@ -55,7 +56,7 @@ public struct DeleteCredentialUseCase: DeleteCredentialUseCaseProtocol {
   // MARK: Private
 
   private let databaseRepository: CredentialRepositoryProtocol
-  private let vault: VaultProtocol
+  private let keyManager: KeyManagerProtocol
   private var hasDeletedCredentialRepository: HasDeletedCredentialRepositoryProtocol
 
 }

@@ -1,5 +1,5 @@
 import BITCore
-import BITCredential
+import BITCredentialShared
 import Foundation
 
 // MARK: - CompatibleCredential

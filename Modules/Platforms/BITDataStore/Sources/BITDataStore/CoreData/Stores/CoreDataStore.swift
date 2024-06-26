@@ -20,22 +20,14 @@ public class CoreDataStore: CoreDataStoreProtocol {
   public var containerName: String
   public var container: NSPersistentContainer
 
-  public func loadStores() async throws {
-    Container.shared.dataStoreLogger().debug("\(#file) \(#function): Start")
-    if let url = container.persistentStoreDescriptions.first?.url?.absoluteString {
-      Container.shared.dataStoreLogger().debug("🔐 \(url)")
+  public func loadStores() throws {
+    var loadError: NSError?
+    container.loadPersistentStores { _, error in
+      loadError = error as NSError?
     }
-
-    try await withCheckedThrowingContinuation({ continuation in
-      container.loadPersistentStores { _, error in
-        if let error {
-          return continuation.resume(with: .failure(error))
-        }
-        return continuation.resume()
-      }
-    }) as Void
-
-    Container.shared.dataStoreLogger().debug("\(#file) \(#function): Done")
+    if let loadError {
+      throw CoreDataStoreError.cannotLoadStores(error: loadError)
+    }
   }
 
   public func removeStores() throws {
@@ -48,21 +40,18 @@ public class CoreDataStore: CoreDataStoreProtocol {
   }
 
   public func clearDatabase(mode: DataStoreClearingMode = .complete) throws {
-    Container.shared.dataStoreLogger().debug("\(#file) \(#function): Start")
     guard let stores = managedContext.persistentStoreCoordinator?.persistentStores else { return }
 
     for store in stores {
       try managedContext.persistentStoreCoordinator?.remove(store)
 
       guard mode == .complete else {
-        Container.shared.dataStoreLogger().debug("\(#file) \(#function): Done -without removing the database")
         return
       }
       if let path = store.url?.absoluteString {
         try FileManager.default.removeItem(atPath: path)
       }
     }
-    Container.shared.dataStoreLogger().debug("\(#file) \(#function): Done")
   }
 
   // MARK: Private
@@ -71,4 +60,12 @@ public class CoreDataStore: CoreDataStoreProtocol {
     CoreDataManager(name: name)
   }
 
+}
+
+// MARK: CoreDataStore.CoreDataStoreError
+
+extension CoreDataStore {
+  private enum CoreDataStoreError: Error {
+    case cannotLoadStores(error: NSError)
+  }
 }

@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: - VaultOption
+
 public struct VaultOption: OptionSet {
 
   public init(rawValue: UInt8) {

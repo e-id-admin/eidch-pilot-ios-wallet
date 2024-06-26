@@ -35,7 +35,7 @@ final class FetchRequestObjectUseCaseTests: XCTestCase {
       fatalError("url generation")
     }
 
-    repository.fetchRequestObjectFromThrowableError = NetworkError.hostnameNotFound
+    repository.fetchRequestObjectFromThrowableError = NetworkError(status: .hostnameNotFound)
 
     do {
       _ = try await useCase.execute(mockUrl)

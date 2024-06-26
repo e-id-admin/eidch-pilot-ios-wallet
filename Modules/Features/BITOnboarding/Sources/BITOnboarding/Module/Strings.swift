@@ -12,26 +12,30 @@ import Foundation
 enum L10n {
   /// pilotWallet
   static let appName = L10n.tr("Localizable", "app_name", fallback: "pilotWallet")
-  /// Los
-  static let biometricSetupActionButton = L10n.tr("Localizable", "biometricSetup_actionButton", fallback: "Los")
+  /// Biometrics
+  static let biometricSetupBiometricsText = L10n.tr("Localizable", "biometricSetup_biometrics_text", fallback: "Biometrics")
   /// Möchten Sie Biometrics zum Entsperren der pilotWallet aktivieren?
   static let biometricSetupContent = L10n.tr("Localizable", "biometricSetup_content", fallback: "Möchten Sie Biometrics zum Entsperren der pilotWallet aktivieren?")
-  /// Die pilotWallet ermöglicht es Ihnen, Ihren digitalen Nachweis mit biometrischen Daten zu sichern.
-  static let biometricSetupDisabledContent = L10n.tr("Localizable", "biometricSetup_disabled_content", fallback: "Die pilotWallet ermöglicht es Ihnen, Ihren digitalen Nachweis mit biometrischen Daten zu sichern.")
+  /// Aktivieren Sie Biometrics, um Ihre digitalen Nachweise sicher zu speichern.
+  static let biometricSetupDisabledContent = L10n.tr("Localizable", "biometricSetup_disabled_content", fallback: "Aktivieren Sie Biometrics, um Ihre digitalen Nachweise sicher zu speichern.")
   /// Zu den Einstellungen
   static let biometricSetupDisabledEnableButton = L10n.tr("Localizable", "biometricSetup_disabled_enableButton", fallback: "Zu den Einstellungen")
+  /// Ohne Biometrics weiter
+  static let biometricSetupDisabledSkipButton = L10n.tr("Localizable", "biometricSetup_disabled_skipButton", fallback: "Ohne Biometrics weiter")
   /// Biometrics deaktiviert
   static let biometricSetupDisabledTitle = L10n.tr("Localizable", "biometricSetup_disabled_title", fallback: "Biometrics deaktiviert")
   /// Überspringen
   static let biometricSetupDismissButton = L10n.tr("Localizable", "biometricSetup_dismissButton", fallback: "Überspringen")
   /// FaceID
   static let biometricSetupFaceidText = L10n.tr("Localizable", "biometricSetup_faceid_text", fallback: "FaceID")
+  /// Die Verwendung biometrischer Daten ist vorübergehend gesperrt. Sie können versuchen, sie zu einem späteren Zeitpunkt zu aktivieren
+  static let biometricSetupLockoutText = L10n.tr("Localizable", "biometricSetup_lockout_text", fallback: "Die Verwendung biometrischer Daten ist vorübergehend gesperrt. Sie können versuchen, sie zu einem späteren Zeitpunkt zu aktivieren")
   /// Biometrics registrieren
   static let biometricSetupNoClass3ToSettingsButton = L10n.tr("Localizable", "biometricSetup_noClass3_toSettingsButton", fallback: "Biometrics registrieren")
   /// Sie können weiterhin Ihren Code verwenden, sollte es mit den Biometrics mal nicht klappen.
   static let biometricSetupReason = L10n.tr("Localizable", "biometricSetup_reason", fallback: "Sie können weiterhin Ihren Code verwenden, sollte es mit den Biometrics mal nicht klappen.")
-  /// Biometrics verwenden
-  static let biometricSetupTitle = L10n.tr("Localizable", "biometricSetup_title", fallback: "Biometrics verwenden")
+  /// Mit Biometrics entsperren
+  static let biometricSetupTitle = L10n.tr("Localizable", "biometricSetup_title", fallback: "Mit Biometrics entsperren")
   /// TouchID
   static let biometricSetupTouchidText = L10n.tr("Localizable", "biometricSetup_touchid_text", fallback: "TouchID")
   /// Zurück
@@ -48,6 +52,8 @@ enum L10n {
   static let globalRetry = L10n.tr("Localizable", "global_retry", fallback: "Nochmals versuchen")
   /// Los
   static let onboardingBiometricButtonText = L10n.tr("Localizable", "onboarding_biometric_button_text", fallback: "Los")
+  /// Weiter
+  static let onboardingContinue = L10n.tr("Localizable", "onboarding_continue", fallback: "Weiter")
   /// Den Code zur Bestätigung wiederholen.
   static let onboardingPinCodeConfirmationText = L10n.tr("Localizable", "onboarding_pin_code_confirmation_text", fallback: "Den Code zur Bestätigung wiederholen.")
   /// Code bestätigen
@@ -56,6 +62,10 @@ enum L10n {
   static let onboardingPinCodeText = L10n.tr("Localizable", "onboarding_pin_code_text", fallback: "Sichern Sie Ihre pilotWallet, damit Ihre Nachweise geschützt sind.")
   /// App mit Code sichern
   static let onboardingPinCodeTitle = L10n.tr("Localizable", "onboarding_pin_code_title", fallback: "App mit Code sichern")
+  /// Logging erlauben
+  static let onboardingPrivacyAcceptLoggingButton = L10n.tr("Localizable", "onboarding_privacy_acceptLoggingButton", fallback: "Logging erlauben")
+  /// Nicht erlauben
+  static let onboardingPrivacyDeclineLoggingButton = L10n.tr("Localizable", "onboarding_privacy_declineLoggingButton", fallback: "Nicht erlauben")
   /// Datenschutzerklärung
   static let onboardingPrivacyLinkText = L10n.tr("Localizable", "onboarding_privacy_link_text", fallback: "Datenschutzerklärung")
   /// https://www.eid.admin.ch/de/pilotwallet-privacy
@@ -64,20 +74,8 @@ enum L10n {
   static let onboardingPrivacyPrimary = L10n.tr("Localizable", "onboarding_privacy_primary", fallback: "Privacy by Design")
   /// Ihre Daten werden ausschliesslich auf Ihrem Smartphone gespeichert. Sie bestimmen, wem Sie wann welche Ihrer Daten vorweisen.
   static let onboardingPrivacySecondary = L10n.tr("Localizable", "onboarding_privacy_secondary", fallback: "Ihre Daten werden ausschliesslich auf Ihrem Smartphone gespeichert. Sie bestimmen, wem Sie wann welche Ihrer Daten vorweisen.")
-  /// Helfen Sie mit, die pilotWallet zu verbessern, indem Sie erlauben, dass anonymisierte Nutzungsdaten dem Entwicklungsteam zur Verfügung stehen.
-  static let onboardingPrivacyToggleText = L10n.tr("Localizable", "onboarding_privacy_toggle_text", fallback: "Helfen Sie mit, die pilotWallet zu verbessern, indem Sie erlauben, dass anonymisierte Nutzungsdaten dem Entwicklungsteam zur Verfügung stehen.")
-  /// https://www.eid.admin.ch/de/pilotwallet-privacy
-  static let onboardingPrivacyOptionsDataPrivacyLink = L10n.tr("Localizable", "onboarding_privacyOptions_dataPrivacyLink", fallback: "https://www.eid.admin.ch/de/pilotwallet-privacy")
-  /// Datenschutzerklärung
-  static let onboardingPrivacyOptionsDataPrivacyLinkText = L10n.tr("Localizable", "onboarding_privacyOptions_dataPrivacyLinkText", fallback: "Datenschutzerklärung")
-  /// Ihre Daten sind ausschliesslich auf Ihrem Smartphone gespeichert. Sie bestimmen, wer, wann und welche persönlichen Daten auslesen darf.
-  static let onboardingPrivacyOptionsDescription = L10n.tr("Localizable", "onboarding_privacyOptions_description", fallback: "Ihre Daten sind ausschliesslich auf Ihrem Smartphone gespeichert. Sie bestimmen, wer, wann und welche persönlichen Daten auslesen darf.")
   /// Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.
-  static let onboardingPrivacyOptionsSwitchDescription = L10n.tr("Localizable", "onboarding_privacyOptions_switchDescription", fallback: "Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.")
-  /// Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.
-  static let onboardingPrivacyOptionsSwitchDescriptionBold = L10n.tr("Localizable", "onboarding_privacyOptions_switchDescriptionBold", fallback: "Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.")
-  /// Privacy by Design
-  static let onboardingPrivacyOptionsTitle = L10n.tr("Localizable", "onboarding_privacyOptions_title", fallback: "Privacy by Design")
+  static let onboardingPrivacyToggleText = L10n.tr("Localizable", "onboarding_privacy_toggle_text", fallback: "Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.")
   /// Mit QR-Code ausweisen
   static let onboardingQrCodePrimary = L10n.tr("Localizable", "onboarding_qrCode_primary", fallback: "Mit QR-Code ausweisen")
   /// Scannen Sie den QR-Code Ihres Gegenübers. Die pilotWallet holt anschliessend Ihr Einverständnis ein, Ihre Daten zu übertragen.
@@ -94,6 +92,11 @@ enum L10n {
   static let storageSetupText = L10n.tr("Localizable", "storageSetup_text", fallback: "pilotWallet einrichten und starten")
   /// pilotWallet einrichten
   static let storageSetupTitle = L10n.tr("Localizable", "storageSetup_title", fallback: "pilotWallet einrichten")
+
+  /// Mit %s weiter
+  static func biometricSetupActionButton(_ p1: UnsafePointer<CChar>) -> String {
+    L10n.tr("Localizable", "biometricSetup_actionButton", p1, fallback: "Mit %s weiter")
+  }
 
   /// Möchten Sie %s zum Entsperren der pilotWallet aktivieren?
   static func onboardingBiometricInfo(_ p1: UnsafePointer<CChar>) -> String {

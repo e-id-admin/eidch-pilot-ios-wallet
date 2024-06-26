@@ -10,19 +10,17 @@ struct UniquePassphraseManager: UniquePassphraseManagerProtocol {
   init(
     isBiometricUsageAllowedUseCase: IsBiometricUsageAllowedUseCaseProtocol = Container.shared.isBiometricUsageAllowedUseCase(),
     uniquePassphraseRepository: UniquePassphraseRepositoryProtocol = Container.shared.uniquePassphraseRepository(),
-    hasher: Encryptable = Container.shared.hasher(),
     passphraseLength: Int = Container.shared.passphraseLength())
   {
     self.isBiometricUsageAllowedUseCase = isBiometricUsageAllowedUseCase
     self.uniquePassphraseRepository = uniquePassphraseRepository
-    self.hasher = hasher
     self.passphraseLength = passphraseLength
   }
 
   // MARK: Internal
 
   func generate() throws -> Data {
-    try hasher.generateRandomBytes(length: passphraseLength)
+    try Data.random(length: passphraseLength)
   }
 
   func save(uniquePassphrase: Data, context: LAContextProtocol) throws {
@@ -52,7 +50,6 @@ struct UniquePassphraseManager: UniquePassphraseManagerProtocol {
 
   private let isBiometricUsageAllowedUseCase: IsBiometricUsageAllowedUseCaseProtocol
   private let uniquePassphraseRepository: UniquePassphraseRepositoryProtocol
-  private let hasher: Encryptable
   private let passphraseLength: Int
 
 }

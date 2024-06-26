@@ -25,6 +25,11 @@ public struct KeyPadButton: View {
         Color.clear
           .overlay(image)
           .padding(.vertical)
+      } else if let font = key.font {
+        Color.clear
+          .overlay(Text(key.value ?? ""))
+          .font(font)
+          .padding(.vertical)
       } else {
         Color.clear
           .overlay(Text(key.value ?? ""))

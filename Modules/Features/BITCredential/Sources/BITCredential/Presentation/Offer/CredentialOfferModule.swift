@@ -1,3 +1,4 @@
+import BITCredentialShared
 import Factory
 import Foundation
 import SwiftUI

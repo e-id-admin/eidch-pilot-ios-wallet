@@ -12,17 +12,18 @@ final class PresentationResultViewModelTests: XCTestCase {
   override func setUp() {
     super.setUp()
     completed = false
-    viewModel = PresentationResultViewModel(presentationMetadata: mock, completed: { self.completed = true })
+    viewModel = PresentationResultViewModel(presentationMetadata: mock, date: mockDate, completed: { self.completed = true })
   }
 
   // MARK: - Metadata
 
   func testInitialState() {
     XCTAssertEqual(viewModel.presentationMetadata, .Mock.sample())
-    XCTAssertEqual(viewModel.date, DateFormatter.presentationResult.string(from: Date()))
+    let expectedDateFormatted = "\(dateFormatter.string(from: mockDate)) | \(hourFormatter.string(from: mockDate))"
+    XCTAssertEqual(expectedDateFormatted, viewModel.formattedDate)
   }
 
-  func completion() {
+  func testCompletion() {
     viewModel.completed()
     XCTAssertTrue(completed)
   }
@@ -31,7 +32,9 @@ final class PresentationResultViewModelTests: XCTestCase {
 
   // swiftlint:disable all
   private let mock: PresentationMetadata = .Mock.sample()
-
+  private let mockDate: Date = .init()
+  private let dateFormatter = DateFormatter.longDateFormatter
+  private let hourFormatter = DateFormatter.shortHourFormatter
   private var viewModel: PresentationResultViewModel!
   private var completed: Bool = false
   // swiftlint:enable all

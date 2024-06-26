@@ -1,4 +1,4 @@
-import CryptoKit
+import BITCrypto
 import Foundation
 
 // MARK: - StringDigest
@@ -37,11 +37,11 @@ extension StringDigest {
     func hash(data: Data) -> Data {
       switch self {
       case .sha256:
-        return Data(SHA256.hash(data: data))
+        return SHA256Hasher().hash(data)
       case .sha384:
-        return Data(SHA384.hash(data: data))
+        return SHA384Hasher().hash(data)
       case .sha512:
-        return Data(SHA512.hash(data: data))
+        return SHA512Hasher().hash(data)
       }
     }
   }

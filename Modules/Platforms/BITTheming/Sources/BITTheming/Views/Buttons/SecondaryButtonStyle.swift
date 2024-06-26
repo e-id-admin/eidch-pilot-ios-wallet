@@ -1,20 +1,28 @@
 import SwiftUI
 
-extension PrimitiveButtonStyle where Self == SecondaryProminentButtonStyle {
-  public static var secondaryProminant: SecondaryProminentButtonStyle { SecondaryProminentButtonStyle() }
+extension ButtonStyle where Self == SecondaryButtonStyle {
+  public static var secondary: SecondaryButtonStyle { SecondaryButtonStyle(buttonConfiguration: .default) }
+  public static var secondarySecondary: SecondaryButtonStyle { SecondaryButtonStyle(buttonConfiguration: .secondary) }
+  public static var secondaryDestructive: SecondaryButtonStyle { SecondaryButtonStyle(buttonConfiguration: .destructive) }
 }
 
-extension PrimitiveButtonStyle where Self == SecondaryProminentReversedButtonStyle {
-  public static var secondaryProminantReversed: SecondaryProminentReversedButtonStyle { SecondaryProminentReversedButtonStyle() }
-}
+// MARK: - SecondaryButton
 
-// MARK: - SecondaryProminentButtonStyle
+public struct SecondaryButton: View {
 
-public struct SecondaryProminentButtonStyle: PrimitiveButtonStyle {
+  // MARK: Lifecycle
+
+  public init(
+    configuration: ButtonStyle.Configuration,
+    buttonConfiguration: SecondaryButtonConfiguration)
+  {
+    self.configuration = configuration
+    self.buttonConfiguration = buttonConfiguration
+  }
 
   // MARK: Public
 
-  public func makeBody(configuration: Configuration) -> some View {
+  public var body: some View {
     configuration.label
       .padding(.x3)
       .font(.custom.headline2)
@@ -25,49 +33,34 @@ public struct SecondaryProminentButtonStyle: PrimitiveButtonStyle {
         RoundedRectangle(
           cornerRadius: .x1,
           style: .continuous)
-          .stroke(isEnabled ? ThemingAssets.accentColor.swiftUIColor : ThemingAssets.petrol2.swiftUIColor, lineWidth: 2)
-          .onTapGesture {
-            if isEnabled {
-              configuration.trigger()
-            }
-          }
+          .stroke(isEnabled ? buttonConfiguration.strokeColor : buttonConfiguration.strokeColorDisabled, lineWidth: 2)
       )
-      .onTapGesture {
-        if isEnabled {
-          configuration.trigger()
-        }
-      }
+      .scaleEffect(configuration.isPressed ? CGSize(width: 0.98, height: 0.98) : CGSize(width: 1.0, height: 1.0))
+      .animation(.interactiveSpring, value: configuration.isPressed)
   }
 
   // MARK: Internal
 
-  @Environment(\.isEnabled) var isEnabled
+  let configuration: ButtonStyle.Configuration
+  let buttonConfiguration: SecondaryButtonConfiguration
+
+  // MARK: Private
+
+  @Environment(\.isEnabled) private var isEnabled: Bool
 
 }
 
-// MARK: - SecondaryProminentReversedButtonStyle
+// MARK: - SecondaryButtonStyle
 
-public struct SecondaryProminentReversedButtonStyle: PrimitiveButtonStyle {
+public struct SecondaryButtonStyle: ButtonStyle {
 
-  // MARK: Public
+  private var buttonConfiguration: SecondaryButtonConfiguration
 
-  public func makeBody(configuration: Configuration) -> some View {
-    configuration.label
-      .padding(.x3)
-      .font(.custom.headline2)
-      .background(isEnabled ? ThemingAssets.background.swiftUIColor : ThemingAssets.background.swiftUIColor.opacity(0.7))
-      .progressViewStyle(CircularProgressViewStyle(tint: ThemingAssets.accentColor.swiftUIColor))
-      .foregroundColor(ThemingAssets.accentColor.swiftUIColor)
-      .clipShape(.rect(cornerRadius: .x1))
-      .onTapGesture {
-        if isEnabled {
-          configuration.trigger()
-        }
-      }
+  public init(buttonConfiguration: SecondaryButtonConfiguration) {
+    self.buttonConfiguration = buttonConfiguration
   }
 
-  // MARK: Internal
-
-  @Environment(\.isEnabled) var isEnabled
-
+  public func makeBody(configuration: Configuration) -> some View {
+    SecondaryButton(configuration: configuration, buttonConfiguration: buttonConfiguration)
+  }
 }

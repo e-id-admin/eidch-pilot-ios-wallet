@@ -19,14 +19,16 @@ struct PresentationResultFieldListView: View {
           .font(.custom.subheadline)
       }
 
-      TagList(data: fields, spacing: .x1, alignment: .leading) { item in
-        Label(
-          title: { Text(item.displayName) },
-          icon: { Image(systemName: "checkmark")
-            .foregroundColor(ThemingAssets.green.swiftUIColor)
-          })
-          .labelStyle(.badge)
-          .padding(.trailing, .x1)
+      VStack(alignment: .leading, spacing: .x2) {
+        ForEach(fields) { item in
+          HStack(alignment: .firstTextBaseline, spacing: .x2) {
+            Image(systemName: "checkmark")
+              .foregroundStyle(ThemingAssets.green.swiftUIColor)
+              .font(.headline)
+            Text(item.displayName)
+            Spacer()
+          }
+        }
       }
     }
   }

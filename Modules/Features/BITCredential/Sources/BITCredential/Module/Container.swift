@@ -1,9 +1,8 @@
-import BITCore
-import BITNetworking
+import BITActivity
+import BITCredentialShared
 import BITSdJWT
 import BITVault
 import Factory
-import Foundation
 import SwiftUI
 
 @MainActor
@@ -21,6 +20,10 @@ extension Container {
 
   // MARK: Internal
 
+  var credentialActivitiesViewModel: ParameterFactory<(Credential, Binding<Bool>), CredentialActivitiesViewModel> {
+    self { CredentialActivitiesViewModel(credential: $0, isPresented: $1) }
+  }
+
   var credentialOfferDeclineConfirmationViewModel: ParameterFactory<(Credential, Binding<Bool>, () -> Void), CredentialOfferDeclineConfirmationViewModel> {
     self { CredentialOfferDeclineConfirmationViewModel(credential: $0, isPresented: $1, onDelete: $2) }
   }
@@ -35,6 +38,14 @@ extension Container {
 
   var credentialDetailViewModel: ParameterFactory<Credential, CredentialDetailViewModel> {
     self { CredentialDetailViewModel($0) }
+  }
+
+  var activityDetailViewModel: ParameterFactory<(Activity, Binding<Bool>), ActivityDetailViewModel> {
+    self { ActivityDetailViewModel($0, isPresented: $1) }
+  }
+
+  var credentialDeleteViewModel: ParameterFactory<(Credential, Binding<Bool>, Binding<Bool>), CredentialDeleteViewModel> {
+    self { CredentialDeleteViewModel(credential: $0, isPresented: $1, isHomePresented: $2) }
   }
 
 }
@@ -95,23 +106,30 @@ extension Container {
     self { HasDeletedCredentialUseCase() }
   }
 
+  public var addActivityUseCase: Factory<AddActivityToCredentialUseCaseProtocol> {
+    self { AddActivityToCredentialUseCase() }
+  }
+
+  public var getLastCredentialActivitiesUseCase: Factory<GetLastCredentialActivitiesUseCaseProtocol> {
+    self { GetLastCredentialActivitiesUseCase() }
+  }
+
+  public var credentialDetailNumberOfActivitiesElements: Factory<Int> {
+    self { 3 }
+  }
+
+  public var getLastActivityUseCase: Factory<GetLastActivityUseCaseProtocol> {
+    self { GetLastActivityUseCase() }
+  }
+
   // MARK: Internal
+
+  var getGroupedCredentialActivitiesUseCase: Factory<GetGroupedCredentialActivitiesUseCaseProtocol> {
+    self { GetGroupedCredentialActivitiesUseCase() }
+  }
 
   var sdJwtDecoder: Factory<SdJWTDecoderProtocol> {
     self { SdJWTDecoder() }
-  }
-
-  var preferredUserLocales: Factory <[UserLocale]> {
-    self { Locale.preferredLanguages }
-  }
-
-  var preferredUserLanguageCodes: Factory<[UserLanguageCode]> {
-    self {
-      self.preferredUserLocales().compactMap({
-        guard let sequence = $0.split(separator: "-").first else { return nil }
-        return String(sequence)
-      })
-    }
   }
 
   var dateBuffer: Factory<TimeInterval> {
@@ -130,7 +148,7 @@ extension Container {
     self { CredentialDidJWKGenerator() }
   }
 
-  var credentialPrivateKeyGenerator: Factory<CredentialPrivateKeyGeneratorProtocol> {
+  var credentialKeyPairGenerator: Factory<CredentialKeyPairGeneratorProtocol> {
     self { CredentialPrivateKeyGenerator() }
   }
 
@@ -138,8 +156,8 @@ extension Container {
     self { CredentialJWTValidator() }
   }
 
-  var vault: Factory<VaultProtocol> {
-    self { Vault() }
+  var keyManager: Factory<KeyManagerProtocol> {
+    self { KeyManager() }
   }
 
   var apiCredentialRepository: Factory<CredentialRepositoryProtocol> {
@@ -161,4 +179,9 @@ extension Container {
   var validFromValidator: Factory<StatusCheckValidatorProtocol> { self { ValidFromValidator() } }
   var validUntilValidator: Factory<StatusCheckValidatorProtocol> { self { ValidUntilValidator() } }
   var revocationValidator: Factory<StatusCheckValidatorProtocol> { self { RevocationValidator() } }
+
+  var credentialActivityRepository: Factory<CredentialActivityRepositoryProtocol> {
+    self { CoreDataCredentialRepository() }
+  }
+
 }

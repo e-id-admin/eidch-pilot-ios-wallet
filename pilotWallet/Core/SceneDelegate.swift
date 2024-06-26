@@ -1,5 +1,7 @@
 import BITAppAuth
 import BITHome
+import BITSecurity
+import BITTheming
 import Factory
 import SwiftUI
 
@@ -9,58 +11,34 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   // MARK: Internal
 
-  @AppStorage("rootOnboardingIsEnabled") var isOnboardingEnabled: Bool = true
-
   var window: UIWindow?
 
-  var deeplinkUrl: URL?
+  var biometricsAlertPresented: Bool = false
+
+  var deeplinkUrl: URL? {
+    didSet {
+      guard let deeplinkUrl else { return }
+      currentScene.didReceiveDeeplink(url: deeplinkUrl)
+    }
+  }
 
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    registerNotifications()
     guard let windowScene = scene as? UIWindowScene else { return }
     window = UIWindow(windowScene: windowScene)
 
-    registerNotifications()
-
-    window?.rootViewController = splashScreenViewController(onComplete: { [weak self] in
-      guard let self else { return }
-      isSplashScreenCompleted = true
-      guard !tryToSwitchToRootBlockingViewControllers() else { return }
-
-      isWillEnterForegroundAllowed = true
-      switchRootViewController(to: homeViewController(), on: window)
-
-      router.login(animated: false)
-    })
-
-    if let url = connectionOptions.urlContexts.first?.url {
-      deeplinkUrl = url
-    }
-
-    window?.makeKeyAndVisible()
+    changeScene(to: SplashScreenScene.self, animated: false)
+    registerDeeplink(from: connectionOptions.urlContexts)
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
     hidePrivacyOverlayView()
-
     NotificationCenter.default.post(name: .willEnterForeground, object: nil)
-    guard isSplashScreenCompleted else { return }
-    guard isWillEnterForegroundAllowed else {
-      tryToSwitchToRootBlockingViewControllers()
-      return
-    }
-
-    guard hasDevicePinUseCase.execute() else { return switchRootViewController(to: noDevicePinCodeViewController(), on: window) }
-    guard !isOnboardingEnabled else { return switchRootViewController(to: onboardingViewController(), on: window) }
-
-    router.login(animated: false)
+    currentScene.willEnterForeground()
   }
 
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    guard let url = URLContexts.first?.url else { return }
-    deeplinkUrl = url
-    if didLogin {
-      didReceiveDeeplink(url: url)
-    }
+    registerDeeplink(from: URLContexts)
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
@@ -68,21 +46,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneWillResignActive(_ scene: UIScene) {
+    if biometricsAlertPresented { return }
     showPrivacyOverlayView()
   }
 
   // MARK: Private
 
-  private enum Defaults {
-    static let rootViewControllerAnimationDuration = 0.3
-  }
-
-  private var isWillEnterForegroundAllowed = false
-  private var isSplashScreenCompleted = false
-  private var didLogin: Bool = false
-
-  private let hasDevicePinUseCase: HasDevicePinUseCaseProtocol = Container.shared.hasDevicePinUseCase()
-  private var router = RootRouter()
+  private var currentScene: SceneManagerProtocol = SplashScreenScene()
 
   private lazy var privacyOverlayView: UIView = {
     let splashscreenView = SplashScreen()
@@ -92,94 +62,59 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     return splashscreenHostingController.view
   }()
 
-}
-
-extension SceneDelegate {
-
-  @discardableResult
-  private func tryToSwitchToRootBlockingViewControllers() -> Bool {
-    guard hasDevicePinUseCase.execute() else {
-      switchRootViewController(to: noDevicePinCodeViewController(), on: window)
-      return true
-    }
-    guard !isOnboardingEnabled else {
-      switchRootViewController(to: onboardingViewController(), on: window)
-      return true
-    }
-    return false
-  }
-
-  private func switchRootViewController(to vc: UIViewController, on window: UIWindow?) {
-    guard let window, window.rootViewController?.className != vc.className else { return }
-    UIView.transition(with: window, duration: Defaults.rootViewControllerAnimationDuration, options: .transitionCrossDissolve, animations: {
-      self.window?.rootViewController = vc
-      self.window?.makeKeyAndVisible()
-    }, completion: nil)
-  }
-
-  private func homeViewController() -> UIViewController {
-    Container.shared.homeModule().viewController
-  }
-
-  private func onboardingViewController() -> UIViewController {
-    let onComplete = { [weak self] in
-      guard let self else { return }
-      isWillEnterForegroundAllowed = true
-      switchRootViewController(to: homeViewController(), on: window)
-      NotificationCenter.default.post(name: .didLogin, object: nil)
-    }
-
-    return Container.shared.onboardingFlowModule(onComplete).viewController
-  }
-
-  private func noDevicePinCodeViewController() -> UIViewController {
-    let onComplete = { [weak self] in
-      guard let self else { return }
-      isWillEnterForegroundAllowed = true
-      if isOnboardingEnabled {
-        switchRootViewController(to: onboardingViewController(), on: window)
-      } else {
-        switchRootViewController(to: homeViewController(), on: window)
-        router.login(animated: false)
-      }
-    }
-
-    return Container.shared.noDevicePinCodeModule(onComplete).viewController
-  }
-
-  private func splashScreenViewController(onComplete completed: @escaping () -> Void) -> UIViewController {
-    if #available(iOS 17.0, *) {
-      let view = AnimatedSplashScreen(completed: completed)
-      return UIHostingController(rootView: view)
-    } else {
-      let view = SplashScreen(completed: completed)
-      return UIHostingController(rootView: view)
-    }
-  }
-
   private func registerNotifications() {
-    NotificationCenter.default.addObserver(forName: .didLogin, object: nil, queue: .main) { [weak self] _ in
-      guard let self else { return }
-      didLogin = true
-      if let url = deeplinkUrl {
-        didReceiveDeeplink(url: url, animated: true)
-      }
+    NotificationCenter.default.addObserver(forName: .biometricsAlertPresented, object: nil, queue: .main) { [weak self] _ in
+      self?.biometricsAlertPresented = true
     }
 
-    NotificationCenter.default.addObserver(forName: .loginRequired, object: nil, queue: .main) { [weak self] _ in
-      guard let self else { return }
-      didLogin = false
+    NotificationCenter.default.addObserver(forName: .biometricsAlertFinished, object: nil, queue: .main) { [weak self] _ in
+      self?.biometricsAlertPresented = false
     }
   }
 }
 
-// MARK: - Deeplink
+// MARK: SceneManagerDelegate
 
-extension SceneDelegate {
+extension SceneDelegate: SceneManagerDelegate {
 
-  private func didReceiveDeeplink(url: URL, animated: Bool = true) {
-    router.deeplink(url: url, animated: animated)
+  // MARK: Internal
+
+  func changeScene(to sceneManager: any SceneManagerProtocol.Type, animated: Bool) {
+    let currentScene = currentScene
+    var scene = sceneManager.init()
+    scene.delegate = self
+    self.currentScene = scene
+
+    let viewController = scene.viewController()
+
+    guard let window, window.rootViewController?.className != viewController.className else { return }
+
+    if animated {
+      UIView.transition(with: window, duration: 0.35, options: .transitionCrossDissolve, animations: {
+        self.apply(viewController: viewController, to: scene, deeplinkUrl: self.deeplinkUrl, previousScene: currentScene)
+      }, completion: nil)
+    } else {
+      apply(viewController: viewController, to: scene, deeplinkUrl: deeplinkUrl, previousScene: currentScene)
+    }
+  }
+
+  func didConsumeDeeplink() {
     deeplinkUrl = nil
+  }
+
+  // MARK: Private
+
+  private func apply(viewController: UIViewController, to scene: any SceneManagerProtocol, deeplinkUrl: URL?, previousScene: any SceneManagerProtocol) {
+    window?.rootViewController = viewController
+    window?.makeKeyAndVisible()
+
+    scene.willPresentScene(from: previousScene)
+
+    if let deeplinkUrl = self.deeplinkUrl {
+      scene.didReceiveDeeplink(url: deeplinkUrl)
+    }
+
+    scene.didPresentScene(from: previousScene)
   }
 
 }
@@ -199,4 +134,15 @@ extension SceneDelegate {
 
     subview.removeFromSuperview()
   }
+}
+
+// MARK: - Deeplink
+
+extension SceneDelegate {
+
+  private func registerDeeplink(from urlContexts: Set<UIOpenURLContext>) {
+    guard let url = urlContexts.first?.url else { return }
+    deeplinkUrl = url
+  }
+
 }

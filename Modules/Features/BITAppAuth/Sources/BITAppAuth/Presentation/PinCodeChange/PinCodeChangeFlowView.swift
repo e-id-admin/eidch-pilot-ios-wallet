@@ -22,7 +22,7 @@ public struct PinCodeChangeFlowView: View {
         pinCodeView(title: L10n.pinChangeNewPinTitle, pinCode: $viewModel.newPinCode, state: .normal)
 
         pinCodeView(title: L10n.pinChangeNewPinConfirmationTitle, pinCode: $viewModel.newPinCodeConfirmation, state: viewModel.newPinCodeConfirmationState, withBackButton: true)
-          .keyPadLeftKey(.back) {
+          .keyPadLeftKey(.cancel) {
             viewModel.backToPin()
           }
       }

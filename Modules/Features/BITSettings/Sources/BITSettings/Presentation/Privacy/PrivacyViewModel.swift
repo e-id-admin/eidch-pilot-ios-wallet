@@ -8,22 +8,33 @@ class PrivacyViewModel: ObservableObject {
 
   public init(
     hasBiometricAuthUseCase: HasBiometricAuthUseCaseProtocol = Container.shared.hasBiometricAuthUseCase(),
-    isBiometricUsageAllowedUseCase: IsBiometricUsageAllowedUseCaseProtocol = Container.shared.isBiometricUsageAllowedUseCase())
+    isBiometricUsageAllowedUseCase: IsBiometricUsageAllowedUseCaseProtocol = Container.shared.isBiometricUsageAllowedUseCase(),
+    updateAnalyticStatusUseCase: UpdateAnalyticStatusUseCaseProtocol = Container.shared.updateAnalyticsStatusUseCase(),
+    fetchAnalyticStatusUseCase: FetchAnalyticStatusUseCaseProtocol = Container.shared.fetchAnalyticStatusUseCase())
   {
     self.hasBiometricAuthUseCase = hasBiometricAuthUseCase
     self.isBiometricUsageAllowedUseCase = isBiometricUsageAllowedUseCase
-
-    fetchBiometricStatus()
+    self.updateAnalyticStatusUseCase = updateAnalyticStatusUseCase
+    self.fetchAnalyticStatusUseCase = fetchAnalyticStatusUseCase
   }
 
   // MARK: Internal
 
   @Published var isBiometricEnabled: Bool = false
+  @Published var isAnalyticsEnabled: Bool = false
+
   @Published var isPinCodeChangePresented = false
+  @Published var isInformationPresented: Bool = false
   @Published var isBiometricChangeFlowPresented: Bool = false
+
+  @Published var isLoading: Bool = false
 
   func fetchBiometricStatus() {
     isBiometricEnabled = (isBiometricUsageAllowedUseCase.execute() && hasBiometricAuthUseCase.execute())
+  }
+
+  func fetchAnalyticsStatus() {
+    isAnalyticsEnabled = fetchAnalyticStatusUseCase.execute()
   }
 
   func presentPinChangeFlow() {
@@ -34,9 +45,25 @@ class PrivacyViewModel: ObservableObject {
     isBiometricChangeFlowPresented = true
   }
 
+  func presentInformationView() {
+    isInformationPresented = true
+  }
+
+  @MainActor
+  func updateAnalyticsStatus() async {
+    isLoading = true
+    let newStatus = !isAnalyticsEnabled
+    await updateAnalyticStatusUseCase.execute(isAllowed: newStatus)
+
+    isAnalyticsEnabled = newStatus
+    isLoading = false
+  }
+
   // MARK: Private
 
   private var hasBiometricAuthUseCase: HasBiometricAuthUseCaseProtocol
   private var isBiometricUsageAllowedUseCase: IsBiometricUsageAllowedUseCaseProtocol
+  private var fetchAnalyticStatusUseCase: FetchAnalyticStatusUseCaseProtocol
+  private var updateAnalyticStatusUseCase: UpdateAnalyticStatusUseCaseProtocol
 
 }

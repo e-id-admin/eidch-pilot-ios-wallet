@@ -1,9 +1,11 @@
-import Factory
 import Foundation
 import Spyable
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITSdJWT
 @testable import BITSdJWTMocks
 @testable import BITTestingCore

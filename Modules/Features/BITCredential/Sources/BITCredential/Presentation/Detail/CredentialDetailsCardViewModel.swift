@@ -1,5 +1,10 @@
+import BITActivity
+import BITAnalytics
 import BITCore
+import BITCredentialShared
+import BITDataStore
 import Combine
+import CoreData
 import Factory
 import Foundation
 
@@ -8,26 +13,37 @@ public class CredentialDetailsCardViewModel: StateMachine<CredentialDetailsCardV
   // MARK: Lifecycle
 
   public init(
-    _ initialState: State = .results,
+    _ initialState: State = .loading,
     credential: Credential,
+    dataStore: CoreDataStoreProtocol = Container.shared.dataStore(),
     checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol = Container.shared.checkAndUpdateCredentialStatusUseCase(),
-    deleteCredentialUseCase: DeleteCredentialUseCaseProtocol = Container.shared.deleteCredentialUseCase())
+    getLastCredentialActivitiesUseCase: GetLastCredentialActivitiesUseCaseProtocol = Container.shared.getLastCredentialActivitiesUseCase(),
+    credentialDetailNumberOfActivitiesElements: Int = Container.shared.credentialDetailNumberOfActivitiesElements(),
+    analytics: AnalyticsProtocol = Container.shared.analytics())
   {
     self.credential = credential
-    self.deleteCredentialUseCase = deleteCredentialUseCase
     self.checkAndUpdateCredentialStatusUseCase = checkAndUpdateCredentialStatusUseCase
+    self.getLastCredentialActivitiesUseCase = getLastCredentialActivitiesUseCase
+    self.analytics = analytics
+    self.credentialDetailNumberOfActivitiesElements = credentialDetailNumberOfActivitiesElements
+    self.dataStore = dataStore
     super.init(initialState)
+
+    registerNotifications()
   }
 
   // MARK: Public
 
   public enum State: Equatable {
+    case loading
     case results
   }
 
   public enum Event {
     case didAppear
     case checkStatus
+    case getLastActivities
+    case setActivities(_ activities: [Activity])
     case loadCredential(_ credential: Credential)
   }
 
@@ -37,18 +53,32 @@ public class CredentialDetailsCardViewModel: StateMachine<CredentialDetailsCardV
       return Just(.checkStatus).eraseToAnyPublisher()
 
     case (_, .checkStatus):
-      state = .results
-
       return AnyPublisher.run {
         try await self.checkAndUpdateCredentialStatusUseCase.execute(for: self.credential)
       } onSuccess: { credential in
         .loadCredential(credential)
-      } onError: { _ in
-        .loadCredential(self.credential)
+      } onError: { error in
+        self.analytics.log(error)
+        return .loadCredential(self.credential)
       }
 
     case (_, .loadCredential(let credential)):
+      self.credential = credential
       credentialDetailBody = .init(from: credential)
+      return Just(.getLastActivities).eraseToAnyPublisher()
+
+    case (_, .getLastActivities):
+      return AnyPublisher.run {
+        try await self.getLastCredentialActivitiesUseCase.execute(for: self.credential, count: self.credentialDetailNumberOfActivitiesElements)
+      } onSuccess: { activities in
+        .setActivities(activities)
+      } onError: { error in
+        self.analytics.log(error)
+        return .setActivities([])
+      }
+
+    case (_, .setActivities(let activities)):
+      self.activities = activities
       state = .results
     }
 
@@ -57,12 +87,19 @@ public class CredentialDetailsCardViewModel: StateMachine<CredentialDetailsCardV
 
   // MARK: Internal
 
-  let credential: Credential
-  var credentialDetailBody: CredentialDetailBody? = nil
-
+  @Published var credential: Credential
+  @Published var credentialDetailBody: CredentialDetailBody? = nil
+  @Published var selectedActivity: Activity? = nil
+  @Published var activities: [Activity] = []
   @Published var isCredentialDetailsPresented: Bool = false
   @Published var isPoliceQRCodePresented: Bool = false
   @Published var isDeleteCredentialPresented: Bool = false
+  @Published var isActivitiesListPresented: Bool = false
+  @Published var isActivityDetailPresented: Bool = false
+
+  var hasActivities: Bool {
+    !activities.isEmpty
+  }
 
   var qrPoliceQRcode: Data? {
     guard
@@ -73,8 +110,44 @@ public class CredentialDetailsCardViewModel: StateMachine<CredentialDetailsCardV
     return data
   }
 
+  func showActivitiesView() {
+    isActivitiesListPresented = true
+  }
+
+  func showActivityDetail() {
+    isActivityDetailPresented = true
+  }
+
   // MARK: Private
 
-  private let deleteCredentialUseCase: DeleteCredentialUseCaseProtocol
   private let checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol
+  private let getLastCredentialActivitiesUseCase: GetLastCredentialActivitiesUseCaseProtocol
+  private let analytics: AnalyticsProtocol
+  private let credentialDetailNumberOfActivitiesElements: Int
+  private let dataStore: CoreDataStoreProtocol
+
+  private func registerNotifications() {
+    NotificationCenter.default.addObserver(
+      forName: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
+      object: dataStore.managedContext,
+      queue: .main,
+      using: { notification in
+        self.managedObjectContextObjectsDidChange(notification: notification)
+      })
+  }
+
+  private func managedObjectContextObjectsDidChange(notification: Notification) {
+    guard let userInfo = notification.userInfo else { return }
+    if (userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>)?.contains(where: { $0.entity.isKindOf(entity: ActivityEntity.entity()) }) ?? false {
+      Task {
+        await send(event: .getLastActivities)
+      }
+    }
+
+    if (userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>)?.contains(where: { $0.entity.isKindOf(entity: CredentialEntity.entity()) }) ?? false {
+      Task {
+        await send(event: .checkStatus)
+      }
+    }
+  }
 }

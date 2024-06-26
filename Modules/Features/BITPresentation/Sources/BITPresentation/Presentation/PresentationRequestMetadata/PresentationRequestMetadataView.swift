@@ -92,7 +92,7 @@ public struct PresentationRequestMetadataView: View {
           Label(L10n.presentationDenyButtonText, systemImage: "xmark")
             .frame(maxWidth: .infinity)
         })
-        .buttonStyle(.secondaryProminant)
+        .buttonStyle(.secondary)
         .disabled(viewModel.isLoading)
 
         NavigationLink(destination: PresentationRequestDeclineView(onComplete: {
@@ -146,7 +146,7 @@ public struct PresentationRequestMetadataView: View {
         Label(L10n.globalBackHome, systemImage: "arrow.right")
           .frame(maxWidth: .infinity)
       })
-      .buttonStyle(.secondaryProminant)
+      .buttonStyle(.secondary)
       .labelStyle(.titleAndIconReversed)
       .padding(.x4)
     }

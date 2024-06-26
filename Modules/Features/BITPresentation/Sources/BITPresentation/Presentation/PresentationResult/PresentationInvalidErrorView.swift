@@ -30,9 +30,9 @@ struct PresentationInvalidErrorView: View {
           .clipShape(.rect(cornerRadius: 4))
           .border(width: attributes.isEmpty ? 0.0 : 1.0, color: ThemingAssets.gray3.swiftUIColor)
       }
+      .padding(.x4)
     }
     .font(.custom.body)
-    .padding(.x4)
   }
 
   // MARK: Private

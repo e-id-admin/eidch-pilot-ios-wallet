@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITSdJWT
 import BITVault
 import Factory
@@ -11,16 +12,16 @@ struct CredentialDidJWKGenerator: CredentialDidJWKGeneratorProtocol {
 
   init(
     jwtManager: JWTManageable = Container.shared.jwtManager(),
-    vault: VaultProtocol = Container.shared.vault())
+    keyManager: KeyManagerProtocol = Container.shared.keyManager())
   {
     self.jwtManager = jwtManager
-    self.vault = vault
+    self.keyManager = keyManager
   }
 
   // MARK: Internal
 
   func generate(from metadataWrapper: CredentialMetadataWrapper, privateKey: SecKey) throws -> DidJwk {
-    let publicKey = try vault.getPublicKey(for: privateKey)
+    let publicKey = try keyManager.getPublicKey(for: privateKey)
     let jwk = try jwtManager.createJWK(from: publicKey)
     let prefix = metadataWrapper.selectedCredential?.cryptographicBindingMethodsSupported?.first
     return "\(prefix ?? Self.defaultJwkDid):\(jwk)"
@@ -31,5 +32,5 @@ struct CredentialDidJWKGenerator: CredentialDidJWKGeneratorProtocol {
   private static let defaultJwkDid: String = "did:jwk"
 
   private let jwtManager: JWTManageable
-  private let vault: VaultProtocol
+  private let keyManager: KeyManagerProtocol
 }

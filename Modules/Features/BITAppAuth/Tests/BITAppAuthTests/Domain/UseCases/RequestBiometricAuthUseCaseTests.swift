@@ -60,6 +60,18 @@ final class RequestBiometricAuthUseCaseTests: XCTestCase {
     }
   }
 
+  func testEvents() async throws {
+    spyContext.evaluatePolicyLocalizedReasonClosure = { _, _ in true }
+    spyContext.canEvaluatePolicyErrorClosure = { _, _ in false }
+
+    let expectationPresented = expectation(forNotification: .biometricsAlertPresented, object: nil)
+    let expectationFinished = expectation(forNotification: .biometricsAlertFinished, object: nil)
+
+    try? await useCase.execute(reason: "reason", context: spyContext)
+
+    await fulfillment(of: [expectationPresented, expectationFinished], timeout: 2)
+  }
+
   // MARK: Private
 
   private var spyContext = LAContextProtocolSpy()

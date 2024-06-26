@@ -7,7 +7,7 @@ public protocol CoreDataStoreProtocol {
   var managedContext: NSManagedObjectContext { get }
   var container: NSPersistentContainer { get }
 
-  func loadStores() async throws
+  func loadStores() throws
   func removeStores() throws
 
   func saveContext() throws

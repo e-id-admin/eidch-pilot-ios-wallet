@@ -1,8 +1,13 @@
 import BITCore
 import Factory
 import XCTest
+
+@testable import BITActivity
+@testable import BITActivityMocks
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITTestingCore
 
 final class CredentialDetailBodyTests: XCTestCase {
@@ -137,6 +142,23 @@ final class CredentialDetailBodyTests: XCTestCase {
 
       XCTAssertTrue(credentialDetailBody.claims.contains(where: { $0.type == valueType }))
     }
+  }
+
+  func testLoadCredentialFromPresentationActivity() throws {
+    let activity: Activity = .Mock.samplePresentation
+
+    let credentialBody = CredentialDetailBody(activity: activity)
+
+    XCTAssertFalse(credentialBody.claims.isEmpty)
+    XCTAssertEqual(credentialBody.claims.count, activity.verifier?.credentialClaims.count)
+  }
+
+  func testLoadCredentialFromReceiveActivity() throws {
+    let activity: Activity = .Mock.sampleReceive
+
+    let credentialBody = CredentialDetailBody(activity: activity)
+
+    XCTAssertTrue(credentialBody.claims.isEmpty)
   }
 
 }

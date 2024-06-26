@@ -3,18 +3,16 @@ import Foundation
 import SwiftUI
 import UIKit
 
+// MARK: - OnboardingFlowModule
+
 @MainActor
 public class OnboardingFlowModule {
 
   // MARK: Lifecycle
 
-  public init(
-    onComplete: (() -> Void)? = nil,
-    router: OnboardingRouter = Container.shared.onboardingRouter())
-  {
+  public init(router: OnboardingRouter = Container.shared.onboardingRouter()) {
     let router = router
     let viewModel = Container.shared.onBoardingFlowViewModel(router)
-    viewModel.onComplete = onComplete
     let view = OnboardingFlowView(viewModel: viewModel)
       .environment(\.font, .custom.body)
       .preferredColorScheme(.light)

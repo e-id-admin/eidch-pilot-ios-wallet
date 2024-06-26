@@ -11,68 +11,70 @@ final class LockWalletRepositoryTests: XCTestCase {
   override func setUp() {
     super.setUp()
 
-    vault = VaultProtocolSpy()
+    keyManagerProtocolSpy = KeyManagerProtocolSpy()
     processInfoService = ProcessInfoServiceProtocolSpy()
-    repository = SecretsRepository(vault: vault, processInfoService: processInfoService)
+    secretManagerProtocolSpy = SecretManagerProtocolSpy()
+    repository = SecretsRepository(keyManager: keyManagerProtocolSpy, secretManager: secretManagerProtocolSpy, processInfoService: processInfoService)
   }
 
   func testLockWallet() throws {
     let timeInterval: TimeInterval = 100
     processInfoService.systemUptime = timeInterval
 
-    vault.saveSecretForKeyClosure = { value, _ in
+    secretManagerProtocolSpy.setForKeyQueryClosure = { value, _, _ in
       guard let value = value as? Double else { return XCTFail("Expected a Double") }
       XCTAssertEqual(value, timeInterval)
     }
 
     try repository.lockWallet()
-    XCTAssertTrue(vault.saveSecretForKeyCalled)
-    XCTAssertEqual(vault.saveSecretForKeyCallsCount, 1)
+    XCTAssertTrue(secretManagerProtocolSpy.setForKeyQueryCalled)
+    XCTAssertEqual(secretManagerProtocolSpy.setForKeyQueryCallsCount, 1)
   }
 
   func testUnlockWallet() throws {
     let timeInterval: TimeInterval = 100
     processInfoService.systemUptime = timeInterval
 
-    vault.saveSecretForKeyClosure = { value, _ in
+    secretManagerProtocolSpy.setForKeyQueryClosure = { value, _, _ in
       XCTAssertNil(value)
     }
 
     try repository.unlockWallet()
-    XCTAssertTrue(vault.deleteSecretForCalled)
-    XCTAssertEqual(vault.deleteSecretForCallsCount, 1)
+    XCTAssertTrue(secretManagerProtocolSpy.removeObjectForKeyQueryCalled)
+    XCTAssertEqual(secretManagerProtocolSpy.removeObjectForKeyQueryCallsCount, 1)
   }
 
   func testTimeIntervalLockWallet() {
     let timeInterval: TimeInterval = 100
-    vault.doubleForKeyReturnValue = timeInterval
+    secretManagerProtocolSpy.doubleForKeyQueryReturnValue = timeInterval
 
     let value = repository.getLockedWalletTimeInterval()
     XCTAssertEqual(value, timeInterval)
 
-    XCTAssertTrue(vault.doubleForKeyCalled)
-    XCTAssertEqual(vault.doubleForKeyCallsCount, 1)
-    XCTAssertFalse(vault.deleteSecretForServiceCalled)
-    XCTAssertFalse(vault.saveSecretForKeyCalled)
+    XCTAssertTrue(secretManagerProtocolSpy.doubleForKeyQueryCalled)
+    XCTAssertEqual(secretManagerProtocolSpy.doubleForKeyQueryCallsCount, 1)
+    XCTAssertFalse(secretManagerProtocolSpy.removeObjectForKeyQueryCalled)
+    XCTAssertFalse(secretManagerProtocolSpy.setForKeyQueryCalled)
   }
 
   func testNoTimeIntervalLockWallet() {
-    vault.doubleForKeyReturnValue = nil
+    secretManagerProtocolSpy.doubleForKeyQueryReturnValue = nil
 
     let value = repository.getLockedWalletTimeInterval()
     XCTAssertNil(value)
 
-    XCTAssertTrue(vault.doubleForKeyCalled)
-    XCTAssertEqual(vault.doubleForKeyCallsCount, 1)
-    XCTAssertFalse(vault.deleteSecretForServiceCalled)
-    XCTAssertFalse(vault.saveSecretForKeyCalled)
+    XCTAssertTrue(secretManagerProtocolSpy.doubleForKeyQueryCalled)
+    XCTAssertEqual(secretManagerProtocolSpy.doubleForKeyQueryCallsCount, 1)
+    XCTAssertFalse(secretManagerProtocolSpy.removeObjectForKeyQueryCalled)
+    XCTAssertFalse(secretManagerProtocolSpy.setForKeyQueryCalled)
   }
 
   // MARK: Private
 
   //swiftlint:disable all
-  private var vault: VaultProtocolSpy!
+  private var keyManagerProtocolSpy: KeyManagerProtocolSpy!
   private var processInfoService: ProcessInfoServiceProtocolSpy!
+  private var secretManagerProtocolSpy: SecretManagerProtocolSpy!
   private var repository: LockWalletRepositoryProtocol!
   //swiftlint:enable all
 

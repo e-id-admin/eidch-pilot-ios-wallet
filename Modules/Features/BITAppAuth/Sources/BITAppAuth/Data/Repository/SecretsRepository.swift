@@ -1,5 +1,4 @@
 import BITCore
-import BITCrypto
 import BITLocalAuthentication
 import BITVault
 import Factory
@@ -9,6 +8,7 @@ import Foundation
 
 enum SecretsError: Error {
   case dataConversionError
+  case unavailableData
 }
 
 // MARK: - SecretsKey
@@ -27,14 +27,20 @@ struct SecretsRepository {
 
   // MARK: Lifecycle
 
-  init(vault: VaultProtocol = Container.shared.vault(), processInfoService: ProcessInfoServiceProtocol = Container.shared.processInfoService()) {
-    self.vault = vault
+  init(
+    keyManager: KeyManagerProtocol = Container.shared.keyManager(),
+    secretManager: SecretManagerProtocol = Container.shared.secretManager(),
+    processInfoService: ProcessInfoServiceProtocol = Container.shared.processInfoService())
+  {
+    self.keyManager = keyManager
+    self.secretManager = secretManager
     self.processInfoService = processInfoService
   }
 
   // MARK: Private
 
-  private let vault: VaultProtocol
+  private let secretManager: SecretManagerProtocol
+  private let keyManager: KeyManagerProtocol
   private let processInfoService: ProcessInfoServiceProtocol
 
 }
@@ -43,15 +49,15 @@ struct SecretsRepository {
 
 extension SecretsRepository: LockWalletRepositoryProtocol {
   func getLockedWalletTimeInterval() -> TimeInterval? {
-    vault.double(forKey: SecretsKey.lockedWalletUptime)
+    secretManager.double(forKey: SecretsKey.lockedWalletUptime)
   }
 
   func lockWallet() throws {
-    try vault.saveSecret(processInfoService.systemUptime, forKey: SecretsKey.lockedWalletUptime)
+    try secretManager.set(processInfoService.systemUptime, forKey: SecretsKey.lockedWalletUptime)
   }
 
   func unlockWallet() throws {
-    try vault.deleteSecret(for: SecretsKey.lockedWalletUptime)
+    try secretManager.removeObject(forKey: SecretsKey.lockedWalletUptime)
   }
 }
 
@@ -60,29 +66,47 @@ extension SecretsRepository: LockWalletRepositoryProtocol {
 extension SecretsRepository: UniquePassphraseRepositoryProtocol {
 
   func saveUniquePassphrase(_ data: Data, forAuthMethod authMethod: AuthMethod, inContext context: LAContextProtocol) throws {
-    try vault.saveSecret(
-      data,
-      for: authMethod.identifierKey,
-      service: SecretsKey.uniquePassphraseServiceKey,
-      accessControlFlags: authMethod.accessControlFlags,
-      protection: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-      canOverride: true,
-      context: context)
+    let query = try QueryBuilder()
+      .setService(SecretsKey.uniquePassphraseServiceKey)
+      .setAccessControlFlags(authMethod.accessControlFlags)
+      .setProtection(kSecAttrAccessibleWhenUnlockedThisDeviceOnly)
+      .setContext(context)
+      .build()
+
+    try secretManager.set(data, forKey: authMethod.identifierKey, query: query)
   }
 
   func hasUniquePassphraseSaved(forAuthMethod authMethod: AuthMethod) -> Bool {
-    vault.keyExists(authMethod.identifierKey, service: SecretsKey.uniquePassphraseServiceKey)
+    do {
+      let query = try QueryBuilder()
+        .setService(SecretsKey.uniquePassphraseServiceKey)
+        .build()
+
+      return secretManager.exists(key: authMethod.identifierKey, query: query)
+    } catch {
+      return false
+    }
   }
 
   func getUniquePassphrase(forAuthMethod authMethod: AuthMethod, inContext context: LAContextProtocol) throws -> Data {
-    try vault.getSecret(
-      for: authMethod.identifierKey,
-      service: SecretsKey.uniquePassphraseServiceKey,
-      context: context)
+    let query = try QueryBuilder()
+      .setService(SecretsKey.uniquePassphraseServiceKey)
+      .setContext(context)
+      .build()
+
+    guard let data = secretManager.data(forKey: authMethod.identifierKey, query: query) else {
+      throw SecretsError.unavailableData
+    }
+
+    return data
   }
 
   func deleteBiometricUniquePassphrase() throws {
-    try vault.deleteSecret(for: AuthMethod.biometric.identifierKey, service: SecretsKey.uniquePassphraseServiceKey)
+    let query = try QueryBuilder()
+      .setService(SecretsKey.uniquePassphraseServiceKey)
+      .build()
+
+    try secretManager.removeObject(forKey: AuthMethod.biometric.identifierKey, query: query)
   }
 }
 
@@ -91,35 +115,45 @@ extension SecretsRepository: UniquePassphraseRepositoryProtocol {
 extension SecretsRepository: PepperRepositoryProtocol {
 
   func createPepperKey() throws -> SecKey {
-    try vault.deletePrivateKey(withIdentifier: SecretsKey.pepperAppPinIdentifierKey, algorithm: .eciesEncryptionStandardVariableIVX963SHA256AESGCM)
-    return try vault.generatePrivateKey(
+    try keyManager.deleteKeyPair(withIdentifier: SecretsKey.pepperAppPinIdentifierKey, algorithm: .eciesEncryptionStandardVariableIVX963SHA256AESGCM)
+
+    let query = try QueryBuilder()
+      .setAccessControlFlags([.privateKeyUsage])
+      .setProtection(kSecAttrAccessibleWhenUnlockedThisDeviceOnly)
+      .build()
+
+    return try keyManager.generateKeyPair(
       withIdentifier: SecretsKey.pepperAppPinIdentifierKey,
       algorithm: .eciesEncryptionStandardVariableIVX963SHA256AESGCM,
-      accessControlFlags: [.privateKeyUsage],
-      protection: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-      options: [.secureEnclavePermanently])
+      options: [.secureEnclavePermanently],
+      query: query)
   }
 
   func getPepperKey() throws -> SecKey {
-    try vault.getPrivateKey(
+    try keyManager.getPrivateKey(
       withIdentifier: SecretsKey.pepperAppPinIdentifierKey,
       algorithm: .eciesEncryptionStandardVariableIVX963SHA256AESGCM)
   }
 
   func setPepperInitialVector(_ initialVector: Data) throws {
-    try vault.saveSecret(
-      initialVector,
-      for: SecretsKey.pepperInitialVectorIdentifierKey,
-      service: SecretsKey.pepperAppPinServiceKey,
-      accessControlFlags: [],
-      protection: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-      canOverride: true)
+    let query = try QueryBuilder()
+      .setService(SecretsKey.pepperAppPinServiceKey)
+      .setAccessControlFlags([])
+      .setProtection(kSecAttrAccessibleWhenUnlockedThisDeviceOnly)
+      .build()
+
+    try secretManager.set(initialVector, forKey: SecretsKey.pepperInitialVectorIdentifierKey, query: query)
   }
 
   func getPepperInitialVector() throws -> Data {
-    try vault.getSecret(
-      for: SecretsKey.pepperInitialVectorIdentifierKey,
-      service: SecretsKey.pepperAppPinServiceKey)
-  }
+    let query = try QueryBuilder()
+      .setService(SecretsKey.pepperAppPinServiceKey)
+      .build()
 
+    guard let data = secretManager.data(forKey: SecretsKey.pepperInitialVectorIdentifierKey, query: query) else {
+      throw SecretsError.unavailableData
+    }
+
+    return data
+  }
 }

@@ -5,6 +5,8 @@ import XCTest
 
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITSdJWTMocks
 
 // MARK: - ApiCredentialRepositoryTests
@@ -51,7 +53,8 @@ final class ApiCredentialRepositoryTests: XCTestCase {
       _ = try await repository.fetchMetadata(from: mockUrl)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 
@@ -80,7 +83,8 @@ final class ApiCredentialRepositoryTests: XCTestCase {
       _ = try await repository.fetchOpenIdConfiguration(from: mockUrl)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 
@@ -114,10 +118,9 @@ final class ApiCredentialRepositoryTests: XCTestCase {
     do {
       _ = try await repository.fetchAccessToken(from: mockUrl, preAuthorizedCode: preAuthorizedCode)
       XCTFail("Should have thrown an error")
-    } catch NetworkError.invalidGrant {
-      /* Expected error received ! */
     } catch {
-      XCTFail("Not the expected error")
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .invalidGrant)
     }
   }
 
@@ -134,10 +137,9 @@ final class ApiCredentialRepositoryTests: XCTestCase {
     do {
       _ = try await repository.fetchAccessToken(from: mockUrl, preAuthorizedCode: preAuthorizedCode)
       XCTFail("Should have thrown an error")
-    } catch NetworkError.invalidGrant {
-      XCTFail("Not the expected error")
     } catch {
-      /* Expected error received ! */
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertNotEqual(error.status, .invalidGrant)
     }
   }
 
@@ -152,10 +154,9 @@ final class ApiCredentialRepositoryTests: XCTestCase {
     do {
       _ = try await repository.fetchAccessToken(from: mockUrl, preAuthorizedCode: preAuthorizedCode)
       XCTFail("Should have thrown an error")
-    } catch NetworkError.internalServerError {
-      /* The expected error */
     } catch {
-      XCTFail("Not the expected error")
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 
@@ -189,7 +190,8 @@ final class ApiCredentialRepositoryTests: XCTestCase {
       _ = try await repository.fetchOpenIdConfiguration(from: mockUrl)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 
@@ -231,7 +233,8 @@ final class ApiCredentialRepositoryTests: XCTestCase {
       _ = try await repository.fetchCredential(from: mockUrl, credentialRequestBody: credentialRequestBody, acccessToken: accessToken)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 
@@ -258,7 +261,8 @@ final class ApiCredentialRepositoryTests: XCTestCase {
       _ = try await repository.fetchCredentialStatus(from: mockURL)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 

@@ -5,9 +5,10 @@ import XCTest
 
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITTestingCore
 
-@MainActor
 final class CredentialDeleteViewModelTests: XCTestCase {
 
   // MARK: Internal
@@ -22,6 +23,8 @@ final class CredentialDeleteViewModelTests: XCTestCase {
   }
 
   func test_init() {
+    XCTAssertTrue(viewModel.isPresented)
+    XCTAssertTrue(viewModel.isHomePresented)
     XCTAssertEqual(viewModel.credential, credential)
   }
 
@@ -30,6 +33,8 @@ final class CredentialDeleteViewModelTests: XCTestCase {
     try await viewModel.confirm()
     XCTAssertTrue(deleteCredentialUseCase.executeCalled)
     XCTAssertEqual(deleteCredentialUseCase.executeCallsCount, 1)
+    XCTAssertTrue(viewModel.isHomePresented)
+    XCTAssertTrue(viewModel.isPresented)
   }
 
   func test_confirm_failure() async throws {
@@ -39,7 +44,15 @@ final class CredentialDeleteViewModelTests: XCTestCase {
     } catch {
       XCTAssertTrue(deleteCredentialUseCase.executeCalled)
       XCTAssertEqual(deleteCredentialUseCase.executeCallsCount, 1)
+      XCTAssertTrue(viewModel.isHomePresented)
+      XCTAssertTrue(viewModel.isPresented)
     }
+  }
+
+  func test_close() {
+    viewModel.close()
+    XCTAssertTrue(viewModel.isPresented)
+    XCTAssertTrue(viewModel.isHomePresented)
   }
 
   // MARK: Private

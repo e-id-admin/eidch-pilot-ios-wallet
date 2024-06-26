@@ -2,8 +2,11 @@ import BITNetworking
 import BITSdJWT
 import Spyable
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITSdJWTMocks
 @testable import BITTestingCore
 
@@ -15,11 +18,11 @@ final class FetchCredentialUseCaseTests: XCTestCase {
     spyRepository = CredentialRepositoryProtocolSpy()
     spyJWTGenerator = CredentialJWTGeneratorProtocolSpy()
     spyDidJWKGenerator = CredentialDidJWKGeneratorProtocolSpy()
-    spyPrivateKeyGenerator = CredentialPrivateKeyGeneratorProtocolSpy()
+    spyKeyPairGenerator = CredentialKeyPairGeneratorProtocolSpy()
     spyJWTValidator = CredentialJWTValidatorProtocolSpy()
 
     spyRepository.fetchOpenIdConfigurationFromReturnValue = .Mock.sample
-    spyPrivateKeyGenerator.generateIdentifierAlgorithmReturnValue = mockSecKey
+    spyKeyPairGenerator.generateIdentifierAlgorithmReturnValue = mockSecKey
     spyDidJWKGenerator.generateFromPrivateKeyReturnValue = mockDidJwk
     spyRepository.fetchAccessTokenFromPreAuthorizedCodeReturnValue = mockAccessToken
     spyJWTGenerator.generateCredentialIssuerDidJwkAlgorithmPrivateKeyNounceReturnValue = mockJWT
@@ -30,7 +33,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
     useCase = FetchCredentialUseCase(
       credentialJWTGenerator: spyJWTGenerator,
       credentialDidJWKGenerator: spyDidJWKGenerator,
-      credentialPrivateKeyGenerator: spyPrivateKeyGenerator,
+      credentialKeyPairGenerator: spyKeyPairGenerator,
       credentialJWTValidator: spyJWTValidator, repository: spyRepository)
   }
 
@@ -46,7 +49,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
     XCTAssertTrue(spyRepository.fetchCredentialFromCredentialRequestBodyAcccessTokenCalled)
     XCTAssertTrue(spyRepository.fetchIssuerPublicKeyInfoFromCalled)
     XCTAssertFalse(spyRepository.fetchAccessTokenFromPreAuthorizedCodeCalled)
-    XCTAssertTrue(spyPrivateKeyGenerator.generateIdentifierAlgorithmCalled)
+    XCTAssertTrue(spyKeyPairGenerator.generateIdentifierAlgorithmCalled)
     XCTAssertTrue(spyDidJWKGenerator.generateFromPrivateKeyCalled)
     XCTAssertTrue(spyJWTGenerator.generateCredentialIssuerDidJwkAlgorithmPrivateKeyNounceCalled)
     XCTAssertTrue(spyJWTValidator.validateWithPublicKeyInfoSelectedCredentialCalled)
@@ -64,7 +67,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
     XCTAssertTrue(spyRepository.fetchCredentialFromCredentialRequestBodyAcccessTokenCalled)
     XCTAssertTrue(spyRepository.fetchIssuerPublicKeyInfoFromCalled)
     XCTAssertTrue(spyRepository.fetchAccessTokenFromPreAuthorizedCodeCalled)
-    XCTAssertTrue(spyPrivateKeyGenerator.generateIdentifierAlgorithmCalled)
+    XCTAssertTrue(spyKeyPairGenerator.generateIdentifierAlgorithmCalled)
     XCTAssertTrue(spyDidJWKGenerator.generateFromPrivateKeyCalled)
     XCTAssertTrue(spyJWTGenerator.generateCredentialIssuerDidJwkAlgorithmPrivateKeyNounceCalled)
     XCTAssertTrue(spyJWTValidator.validateWithPublicKeyInfoSelectedCredentialCalled)
@@ -82,7 +85,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
     } catch FetchCredentialError.unsupportedAlgorithm {
       XCTAssertTrue(spyRepository.fetchOpenIdConfigurationFromCalled)
       XCTAssertFalse(spyRepository.fetchAccessTokenFromPreAuthorizedCodeCalled)
-      XCTAssertFalse(spyPrivateKeyGenerator.generateIdentifierAlgorithmCalled)
+      XCTAssertFalse(spyKeyPairGenerator.generateIdentifierAlgorithmCalled)
       XCTAssertFalse(spyDidJWKGenerator.generateFromPrivateKeyCalled)
       XCTAssertFalse(spyRepository.fetchCredentialFromCredentialRequestBodyAcccessTokenCalled)
       XCTAssertFalse(spyRepository.fetchIssuerPublicKeyInfoFromCalled)
@@ -94,7 +97,8 @@ final class FetchCredentialUseCaseTests: XCTestCase {
   }
 
   func testAccessTokenInvalidGrant() async {
-    spyRepository.fetchAccessTokenFromPreAuthorizedCodeThrowableError = NetworkError.invalidGrant
+    spyRepository.fetchAccessTokenFromPreAuthorizedCodeThrowableError = NetworkError(status: .invalidGrant)
+
     do {
       _ = try await useCase.execute(
         from: mockUrl,
@@ -105,7 +109,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
     } catch FetchCredentialError.expiredInvitation {
       XCTAssertTrue(spyRepository.fetchOpenIdConfigurationFromCalled)
       XCTAssertTrue(spyRepository.fetchAccessTokenFromPreAuthorizedCodeCalled)
-      XCTAssertTrue(spyPrivateKeyGenerator.generateIdentifierAlgorithmCalled)
+      XCTAssertTrue(spyKeyPairGenerator.generateIdentifierAlgorithmCalled)
       XCTAssertTrue(spyDidJWKGenerator.generateFromPrivateKeyCalled)
       XCTAssertFalse(spyRepository.fetchCredentialFromCredentialRequestBodyAcccessTokenCalled)
       XCTAssertFalse(spyRepository.fetchIssuerPublicKeyInfoFromCalled)
@@ -131,7 +135,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
       XCTAssertFalse(spyRepository.fetchCredentialFromCredentialRequestBodyAcccessTokenCalled)
       XCTAssertFalse(spyRepository.fetchIssuerPublicKeyInfoFromCalled)
       XCTAssertFalse(spyRepository.fetchAccessTokenFromPreAuthorizedCodeCalled)
-      XCTAssertFalse(spyPrivateKeyGenerator.generateIdentifierAlgorithmCalled)
+      XCTAssertFalse(spyKeyPairGenerator.generateIdentifierAlgorithmCalled)
       XCTAssertFalse(spyDidJWKGenerator.generateFromPrivateKeyCalled)
       XCTAssertFalse(spyJWTGenerator.generateCredentialIssuerDidJwkAlgorithmPrivateKeyNounceCalled)
       XCTAssertFalse(spyJWTValidator.validateWithPublicKeyInfoSelectedCredentialCalled)
@@ -155,7 +159,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
       XCTAssertFalse(spyRepository.fetchCredentialFromCredentialRequestBodyAcccessTokenCalled)
       XCTAssertFalse(spyRepository.fetchIssuerPublicKeyInfoFromCalled)
       XCTAssertFalse(spyRepository.fetchAccessTokenFromPreAuthorizedCodeCalled)
-      XCTAssertFalse(spyPrivateKeyGenerator.generateIdentifierAlgorithmCalled)
+      XCTAssertFalse(spyKeyPairGenerator.generateIdentifierAlgorithmCalled)
       XCTAssertFalse(spyDidJWKGenerator.generateFromPrivateKeyCalled)
       XCTAssertFalse(spyJWTGenerator.generateCredentialIssuerDidJwkAlgorithmPrivateKeyNounceCalled)
       XCTAssertFalse(spyJWTValidator.validateWithPublicKeyInfoSelectedCredentialCalled)
@@ -180,7 +184,7 @@ final class FetchCredentialUseCaseTests: XCTestCase {
   // swiftlint:enable all
   private var spyJWTGenerator = CredentialJWTGeneratorProtocolSpy()
   private var spyDidJWKGenerator = CredentialDidJWKGeneratorProtocolSpy()
-  private var spyPrivateKeyGenerator = CredentialPrivateKeyGeneratorProtocolSpy()
+  private var spyKeyPairGenerator = CredentialKeyPairGeneratorProtocolSpy()
   private var spyJWTValidator = CredentialJWTValidatorProtocolSpy()
   private var spyRepository = CredentialRepositoryProtocolSpy()
   private var useCase = FetchCredentialUseCase()

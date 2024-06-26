@@ -16,20 +16,21 @@ final class GetLockedWalletTimeLeftUseCaseTests: XCTestCase {
   override func setUp() {
     super.setUp()
     processInfoService = ProcessInfoServiceProtocolSpy()
-    vault = VaultProtocolSpy()
-    let repository = SecretsRepository(vault: vault, processInfoService: processInfoService)
+    secretManagerProtocolSpy = SecretManagerProtocolSpy()
+    keyManagerProtocolSpy = KeyManagerProtocolSpy()
+    let repository = SecretsRepository(keyManager: keyManagerProtocolSpy, secretManager: secretManagerProtocolSpy, processInfoService: processInfoService)
     useCase = GetLockedWalletTimeLeftUseCase(lockDelay: delay, repository: repository, processInfoService: processInfoService)
   }
 
   func testGetTimeLeft() throws {
     processInfoService.systemUptime = timeInterval
-    vault.doubleForKeyReturnValue = timeInterval
+    secretManagerProtocolSpy.doubleForKeyQueryReturnValue = timeInterval
     let time = useCase.execute()
 
     // result should be the delay as the vault and the processInfo returns 1000.
     XCTAssertEqual(time, delay)
-    XCTAssertTrue(vault.doubleForKeyCalled)
-    XCTAssertEqual(vault.doubleForKeyCallsCount, 1)
+    XCTAssertTrue(secretManagerProtocolSpy.doubleForKeyQueryCalled)
+    XCTAssertEqual(secretManagerProtocolSpy.doubleForKeyQueryCallsCount, 1)
   }
 
   // MARK: Private
@@ -40,7 +41,8 @@ final class GetLockedWalletTimeLeftUseCaseTests: XCTestCase {
   // swiftlint:disable all
   private var useCase: GetLockedWalletTimeLeftUseCase!
   private var processInfoService: ProcessInfoServiceProtocolSpy!
-  private var vault: VaultProtocolSpy!
+  private var secretManagerProtocolSpy: SecretManagerProtocolSpy!
+  private var keyManagerProtocolSpy: KeyManagerProtocolSpy!
   // swiftlint:enable all
 
 }

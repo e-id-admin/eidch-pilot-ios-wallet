@@ -12,6 +12,7 @@ public struct LinkText: View {
     Text("\(text) \(Image(systemName: "arrow.up.right"))")
       .underline()
       .multilineTextAlignment(.leading)
+      .font(.custom.textLink)
   }
 }
 

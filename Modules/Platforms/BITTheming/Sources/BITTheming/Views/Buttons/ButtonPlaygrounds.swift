@@ -56,29 +56,13 @@ private struct ButtonPlaygrounds: View {
           Label(title: { Text("Close") }, icon: { Image(systemName: "xmark") })
             .frame(maxWidth: .infinity)
         })
-        .buttonStyle(.secondaryProminant)
+        .buttonStyle(.secondary)
         Button(action: { isHidden.toggle() }, label: {
           Label(title: { Text("Close") }, icon: { Image(systemName: "xmark") })
             .frame(maxWidth: .infinity)
         })
         .disabled(true)
-        .buttonStyle(.secondaryProminant)
-
-        VStack {
-          Button(action: { isHidden.toggle() }, label: {
-            Label(title: { Text("Go back") }, icon: { Image(systemName: "delete.backward") })
-              .frame(maxWidth: .infinity)
-          })
-          .buttonStyle(.secondaryProminantReversed)
-          Button(action: { isHidden.toggle() }, label: {
-            Label(title: { Text("Go back") }, icon: { Image(systemName: "delete.backward") })
-              .frame(maxWidth: .infinity)
-          })
-          .disabled(true)
-          .buttonStyle(.secondaryProminantReversed)
-        }
-        .padding()
-        .background(Color.black)
+        .buttonStyle(.secondary)
 
         VStack {
           Button(action: { isHidden.toggle() }, label: {

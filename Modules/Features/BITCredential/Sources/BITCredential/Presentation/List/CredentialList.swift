@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITTheming
 import Factory
 import Foundation
@@ -9,8 +10,9 @@ public struct CredentialList: View {
 
   // MARK: Lifecycle
 
-  public init(credentials: [Credential] = []) {
+  public init(credentials: [Credential] = [], isPresented: Binding<Bool>) {
     self.credentials = credentials
+    _isPresented = isPresented
   }
 
   // MARK: Public
@@ -18,15 +20,16 @@ public struct CredentialList: View {
   public var body: some View {
     ForEach(credentials) { credential in
       NavigationLink {
-        CredentialDetailView(credential: credential)
+        CredentialDetailView(credential: credential, isPresented: $isPresented)
       } label: {
         CredentialCard(credential)
       }
     }
   }
 
-  // MARK: Internal
+  // MARK: Private
 
-  var credentials: [Credential] = []
+  private var credentials: [Credential] = []
+  @Binding private var isPresented: Bool
 
 }

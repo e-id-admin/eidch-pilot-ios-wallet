@@ -1,3 +1,4 @@
+import BITCredentialShared
 import Foundation
 
 public struct CredentialOfferHeaderViewModel {

@@ -3,7 +3,10 @@ import SwiftUI
 
 struct ConfirmationPinCodeStepView: View {
 
+  @Binding var index: Int
   @Binding var pinCode: PinCode
+
+  var pageCount: Int
   var state: PinCodeState
   let backPressed: () -> Void
 
@@ -11,18 +14,17 @@ struct ConfirmationPinCodeStepView: View {
     VStack(alignment: .leading) {
       StepViewHeader()
 
-      Text(L10n.onboardingPinCodeConfirmationTitle)
-        .font(.custom.title)
-        .multilineTextAlignment(.leading)
-      PinCodeView(pinCode: $pinCode, state: state, text: L10n.onboardingPinCodeConfirmationText)
-        .keyPadLeftKey(.back) {
+      OnboardingPinCodeView(
+        pinCode: $pinCode,
+        state: state,
+        text: L10n.onboardingPinCodeConfirmationTitle,
+        subtitle: L10n.onboardingPinCodeConfirmationText,
+        isKeyPadDisabled: false,
+        pageCount: pageCount,
+        index: $index).keyPadLeftKey(.cancel) {
           backPressed()
         }
     }
     .padding(.x4)
   }
-}
-
-#Preview {
-  PinCodeStepView(pinCode: .constant("1234"))
 }

@@ -1,0 +1,5 @@
+strings:
+  inputs: Sources/BITActivity/Resources/de.lproj
+  outputs:
+    - templateName: structured-swift5
+      output: Sources/BITActivity/Module/Strings.swift

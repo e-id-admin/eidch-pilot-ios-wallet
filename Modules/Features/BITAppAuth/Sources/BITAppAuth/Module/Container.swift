@@ -14,8 +14,8 @@ extension Container {
     self { LoginModule() }
   }
 
-  public var noDevicePinCodeModule: ParameterFactory<(() -> Void)?, NoDevicePinCodeModule> {
-    self { NoDevicePinCodeModule(onComplete: $0) }
+  public var noDevicePinCodeModule: Factory<NoDevicePinCodeModule> {
+    self { NoDevicePinCodeModule() }
   }
 
   // MARK: Internal
@@ -60,10 +60,12 @@ extension Container {
   public var awaitTimeBeforeBiometrics: Factory<UInt64> { self { 325_000_000 } }
   public var pinCodeObserverDelay: Factory<CGFloat> { self { 0.1 } }
   public var loginRequiredIntervalThreshold: Factory<TimeInterval> { self { 5 } }
-  public var passphraseLength: Factory<Int> { self { 64 } } // 64 bytes = 512 bits
   public var pinCodeSize: Factory<Int> { self { 6 } }
   public var attemptsLimit: Factory<Int> { self { 5 } }
-  public var lockDelay: Factory<TimeInterval> { self { 60 * 5 } } // in seconds
+  public var lockDelay: Factory<TimeInterval> { self { 60 * 5 } }
+
+  /// Length In byte
+  public var passphraseLength: Factory<Int> { self { 64 } }
 
   public var pinCodeManager: Factory<PinCodeManagerProtocol> {
     self { PinCodeManager() }
@@ -95,28 +97,38 @@ extension Container {
 
   // MARK: Internal
 
-  var vault: Factory<VaultProtocol> {
-    self { Vault() }
-  }
-
   var authCredentialType: Factory<LACredentialType> {
     self { .applicationPassword }
   }
 
-  var hasher: Factory<Encryptable> {
-    self { Encrypter(algorithm: self.hashingAlgorithm()) }
+  var hasher: Factory<BITCrypto.Hashable> {
+    self { SHA256Hasher() }
   }
 
   var encrypter: Factory<Encryptable> {
-    self { Encrypter(algorithm: self.encryptingAlgorithm()) }
+    self { AESEncrypter() }
   }
 
-  var hashingAlgorithm: Factory<BITCrypto.Algorithm> {
-    self { .sha256 }
+  /// Length In byte
+  var encrypterLength: Factory<Int> {
+    self { 32 }
   }
 
-  var encryptingAlgorithm: Factory<BITCrypto.Algorithm> {
-    self { .aes256 }
+  /// Length In byte
+  var pepperKeyInitialVectorLength: Factory<Int> {
+    self { 12 }
+  }
+
+  var pepperKeyDerivationAlgorithm: Factory<SecKeyAlgorithm> {
+    self { .ecdhKeyExchangeStandardX963SHA256 }
+  }
+
+  var secretManager: Factory<SecretManagerProtocol> {
+    self { SecretManager() }
+  }
+
+  var keyManager: Factory<KeyManagerProtocol> {
+    self { KeyManager() }
   }
 
 }

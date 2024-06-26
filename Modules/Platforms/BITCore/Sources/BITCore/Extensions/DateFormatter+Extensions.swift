@@ -11,7 +11,16 @@ extension DateFormatter {
 
   // MARK: Public
 
-  public static let presentationResult: DateFormatter = .init(format: "dd MMMM yyyy | HH:mm")
-  public static let chShortFormat: DateFormatter = .init(format: "dd.MM.yyyy")
+  public static let longDateFormatter: DateFormatter = generateFormatter(forTemplate: "dd MMMM yyyy")
+  public static let shotDateFormatter: DateFormatter = generateFormatter(forTemplate: "dd.MM.yyyy")
+  public static let shortHourFormatter: DateFormatter = generateFormatter(forTemplate: "HH:mm")
+  public static let yearMonthGroupedFormatter: DateFormatter = generateFormatter(forTemplate: "MMMM yyyy")
 
+  // MARK: Private
+
+  private static func generateFormatter(forTemplate template: String) -> DateFormatter {
+    let dateFormatter = DateFormatter()
+    dateFormatter.setLocalizedDateFormatFromTemplate(template)
+    return dateFormatter
+  }
 }

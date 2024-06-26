@@ -16,6 +16,7 @@
 "settings_contactLink" = "https://forms.eid.admin.ch/elfa";
 "settings_impressum" = "Impressum";
 "settings_licences" = "Lizenzen";
+"settings_getVerified" = "Wie kann ich kontrolliert werden?";
 "securitySettings_title" = "Datenschutz & Sicherheit";
 "securitySettings_loginTitle" = "Sicherheit";
 "securitySettings_changePin" = "Code ändern";
@@ -27,6 +28,7 @@
 "securitySettings_dataProtectionLink" = "https://www.eid.admin.ch/de/pilotwallet-privacy";
 "securitySettings_shareAnalysis" = "Anonymisierte Fehlermeldungen teilen";
 "securitySettings_dataAnalysis" = "Weitere Informationen";
+"securitySettings_shareAnalysis_text" = "Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.";
 "impressum_title" = "Impressum";
 "impressum_header_text" = "Die pilotWallet ist Open-Source. Der Quellcode kann auf GitHub eingesehen werden.";
 "impressum_build_number" = "Build Nummer";
@@ -42,3 +44,10 @@
 "impressum_legals_link" = "https://www.eid.admin.ch/de/pilotwallet-privacy";
 "impressum_disclaimer_title" = "Haftungsausschluss";
 "impressum_disclaimer_text" = "Die Autorenschaft übernimmt keinerlei Gewähr hinsichtlich der Zuverlässigkeit und Vollständigkeit der Informationen. Verweise und Links auf Webseiten Dritter liegen ausserhalb unseres Verantwortungsbereichs.";
+"dataAnalysis_screenTitle" = "Fehlermeldungen teilen";
+"dataAnalysis_title" = "Analyse & Verbesserung";
+"dataAnalysis_text" = "Helfen Sie mit, die pilotWallet zu verbessern, indem Sie erlauben, dass folgende anonymisierte Fehlermeldungen dem Entwicklungsteam zur Verfügung stehen:\n\n\n✓ Allgemeine Fehlermeldungen\n✓ Kommunikationsfehler\n✓ App Absturz\n\n\nEs werden nur anonymisierte Daten analysiert, die keinen Rückschluss auf Ihre Person erlauben.";
+"get_verified_title" = "Verifizieren";
+"get_verified_text" = "Ihr elektronischer Lernfahrausweis kann über den LicenceCheck, einer Webapplikation, von Ihrer Fahrbegleitung (Fahrlehrer/innen oder Familie und Freunde) kontrolliert und geprüft werden.";
+"get_verified_link_text" = "Zum LicenceCheck";
+"get_verified_link" = "https://licencecheck.astra.admin.ch";

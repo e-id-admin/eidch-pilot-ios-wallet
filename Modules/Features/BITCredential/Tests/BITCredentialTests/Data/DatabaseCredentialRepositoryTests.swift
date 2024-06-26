@@ -2,8 +2,11 @@ import BITCore
 import BITDataStore
 import Factory
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 
 final class DatabaseCredentialRepositoryTests: XCTestCase {
 
@@ -20,7 +23,7 @@ final class DatabaseCredentialRepositoryTests: XCTestCase {
   // MARK: - Metadata
 
   func testCreateCredentialSuccess() async throws {
-    try await Container.shared.dataStore().loadStores()
+    try Container.shared.dataStore().loadStores()
     let mockSample = Credential.Mock.sample
     let credential = try await repository.create(credential: mockSample)
 

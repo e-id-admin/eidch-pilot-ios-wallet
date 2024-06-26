@@ -23,7 +23,11 @@ let package = Package(
     .package(path: "../../Platforms/BITTheming"),
     .package(path: "../../Platforms/BITDataStore"),
     .package(url: "https://github.com/hmlongco/Factory", exact: "2.2.0"),
+    .package(path: "../../Platforms/BITAnalytics"),
+    .package(path: "../BITCredentialShared"),
+    .package(path: "../BITActivity"),
     .package(url: "https://github.com/Matejkob/swift-spyable", revision: "8f78f36989bde9f06cc5a5254a6748c23c16b045"),
+    .package(url: "https://github.com/gh123man/SwiftUI-Refresher", exact: "1.1.8"),
   ],
   targets: [
     .target(
@@ -36,8 +40,11 @@ let package = Package(
         .product(name: "BITSettings", package: "BITSettings"),
         .product(name: "BITTheming", package: "BITTheming"),
         .product(name: "BITDataStore", package: "BITDataStore"),
+        .product(name: "BITAnalytics", package: "BITAnalytics"),
+        .product(name: "BITCredentialShared", package: "BITCredentialShared"),
         .product(name: "Factory", package: "Factory"),
         .product(name: "Spyable", package: "swift-spyable"),
+        .product(name: "Refresher", package: "SwiftUI-Refresher"),
       ]),
     .testTarget(
       name: "BITHomeTests",
@@ -45,5 +52,7 @@ let package = Package(
         "BITHome",
         .product(name: "BITTestingCore", package: "BITCore"),
         .product(name: "BITCredentialMocks", package: "BITCredential"),
+        .product(name: "BITCredentialSharedMocks", package: "BITCredentialShared"),
+        .product(name: "BITActivityMocks", package: "BITActivity"),
       ]),
   ])

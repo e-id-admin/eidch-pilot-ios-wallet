@@ -43,7 +43,8 @@ final class PresentationRepositoryTests: XCTestCase {
       _ = try await repository.fetchRequestObject(from: mockUrl)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 
@@ -66,7 +67,8 @@ final class PresentationRepositoryTests: XCTestCase {
       _ = try await repository.submitPresentation(from: mockUrl, presentationRequestBody: presentationRequestBody)
       XCTFail("Should have thrown an error")
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 

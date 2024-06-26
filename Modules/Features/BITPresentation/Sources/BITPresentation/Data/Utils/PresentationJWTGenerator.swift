@@ -1,5 +1,5 @@
 import BITAppAuth
-import BITCredential
+import BITCredentialShared
 import BITLocalAuthentication
 import BITSdJWT
 import BITVault
@@ -20,11 +20,11 @@ struct PresentationJWTGenerator: PresentationJWTGeneratorProtocol {
   // MARK: Lifecycle
 
   init(
-    vault: VaultProtocol = Container.shared.vault(),
+    keyManager: KeyManagerProtocol = Container.shared.keyManager(),
     jwtManager: JWTManageable = Container.shared.jwtManager(),
     context: LAContextProtocol = Container.shared.authContext())
   {
-    self.vault = vault
+    self.keyManager = keyManager
     self.jwtManager = jwtManager
     self.context = context
   }
@@ -43,11 +43,15 @@ struct PresentationJWTGenerator: PresentationJWTGeneratorProtocol {
       throw PresentationJWTGeneratorError.invalidAlgorithm
     }
 
-    let privateKey = try vault.getPrivateKey(
+    let query = try QueryBuilder()
+      .setContext(context)
+      .build()
+
+    let privateKey = try keyManager.getPrivateKey(
       withIdentifier: rawCredential.privateKeyIdentifier.uuidString,
       algorithm: algorithm,
-      context: context)
-    let publicKey = try vault.getPublicKey(for: privateKey)
+      query: query)
+    let publicKey = try keyManager.getPublicKey(for: privateKey)
 
     let jwk = try jwtManager.createJWK(from: publicKey)
     let didJwk = "did:jwk:\(jwk)"
@@ -60,7 +64,7 @@ struct PresentationJWTGenerator: PresentationJWTGeneratorProtocol {
 
   // MARK: Private
 
-  private let vault: VaultProtocol
+  private let keyManager: KeyManagerProtocol
   private let jwtManager: JWTManageable
   private let context: LAContextProtocol
 

@@ -1,4 +1,6 @@
+import BITActivity
 import BITCore
+import BITCredentialShared
 import BITSdJWT
 import Foundation
 
@@ -14,6 +16,12 @@ public struct CredentialDetailBody: Equatable {
     self.status = status
   }
 
+  public init(activity: Activity) {
+    display = .init(id: activity.credential.id, name: activity.credential.preferredDisplay?.name ?? L10n.globalNotAssigned)
+    status = activity.credential.status
+    claims = activity.verifier?.credentialClaims.sorted(by: { $0.order < $1.order }).compactMap({ credentialClaim in .init(credentialClaim) }) ?? []
+  }
+
   public init(from originalCredential: Credential) {
     var credential = originalCredential
 
@@ -26,7 +34,7 @@ public struct CredentialDetailBody: Equatable {
       let displayName = claim.preferredDisplay?.name ?? claim.key
       let valueType = ValueType(rawValue: claim.valueType)
 
-      claims.append(Claim(id: claim.id, key: displayName, value: claim.value, type: valueType))
+      claims.append(.init(id: claim.id, key: displayName, value: claim.value, type: valueType))
     }
 
     let issuerDisplayName = credential.preferredDisplay?.name ?? L10n.globalNotAssigned
@@ -56,6 +64,20 @@ extension CredentialDetailBody {
     var key: String
     var value: String
     var type: ValueType?
+
+    init(_ activityVerifierCredentialClaim: ActivityVerifierCredentialClaim, id: UUID = UUID()) {
+      self.id = id
+      key = activityVerifierCredentialClaim.preferredDisplay?.name ?? activityVerifierCredentialClaim.key
+      value = activityVerifierCredentialClaim.value
+      type = activityVerifierCredentialClaim.valueType
+    }
+
+    init(id: UUID, key: String, value: String, type: ValueType? = nil) {
+      self.id = id
+      self.key = key
+      self.value = value
+      self.type = type
+    }
   }
 }
 

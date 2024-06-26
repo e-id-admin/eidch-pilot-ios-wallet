@@ -3,8 +3,11 @@ import Factory
 import Foundation
 import Spyable
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITInvitation
 @testable import BITPresentation
 @testable import BITPresentationMocks
@@ -82,6 +85,11 @@ final class InvitationViewModelTests: XCTestCase {
 
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+
+    XCTAssertTrue(addActivityUseCase.executeTypeCredentialVerifierCalled)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.credential, credential)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.type, .credentialReceived)
+    XCTAssertNil(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.verifier)
   }
 
   func testValidateCredentialOfferSuccess_withRouter() async {
@@ -128,6 +136,63 @@ final class InvitationViewModelTests: XCTestCase {
 
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+
+    XCTAssertTrue(addActivityUseCase.executeTypeCredentialVerifierCalled)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.credential, credential)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.type, .credentialReceived)
+    XCTAssertNil(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.verifier)
+  }
+
+  func testValidateCredentialOfferSuccess_whenAddActivityFails() async {
+    let mockCredentialOffer: CredentialOffer = .Mock.sample
+    let credential: Credential = .Mock.sample
+
+    let useCases = useCases(mode: .qr)
+    let viewModel = InvitationViewModel(routes: mockRouter, useCases: useCases)
+
+    checkInvitationTypeUseCase.executeUrlReturnValue = .credentialOffer
+    validateCredentialOfferInvitationUrlUseCase.executeReturnValue = mockCredentialOffer
+    fetchMetadataUseCase.executeFromReturnValue = .Mock.sample
+    fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenReturnValue = .Mock.sample
+    saveCredentialUseCase.executeSdJWTMetadataWrapperReturnValue = credential
+    checkAndUpdateCredentialStatusUseCase.executeForReturnValue = credential
+    addActivityUseCase.executeTypeCredentialVerifierThrowableError = TestingError.error
+
+    await viewModel.send(event: .setMetadataUrl(url))
+
+    XCTAssertNil(viewModel.stateError)
+    XCTAssertEqual(viewModel.state, .qrScanner)
+    XCTAssertFalse(viewModel.isOfferPresented)
+    XCTAssertTrue(mockRouter.didCallCredentialOffer)
+    XCTAssertFalse(viewModel.isPresentationPresented)
+    XCTAssertFalse(viewModel.isCredentialSelectionPresented)
+    XCTAssertFalse(viewModel.isTorchEnabled)
+    XCTAssertFalse(viewModel.isTorchAvailable)
+
+    XCTAssertEqual(url, validateCredentialOfferInvitationUrlUseCase.executeReceivedUrl)
+
+    XCTAssertTrue(validateCredentialOfferInvitationUrlUseCase.executeCalled)
+    XCTAssertEqual(1, validateCredentialOfferInvitationUrlUseCase.executeCallsCount)
+    XCTAssertTrue(checkInvitationTypeUseCase.executeUrlCalled)
+    XCTAssertEqual(1, checkInvitationTypeUseCase.executeUrlCallsCount)
+    XCTAssertTrue(fetchMetadataUseCase.executeFromCalled)
+    XCTAssertEqual(1, fetchMetadataUseCase.executeFromCallsCount)
+    XCTAssertTrue(fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenCalled)
+    XCTAssertEqual(1, fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenCallsCount)
+    XCTAssertTrue(saveCredentialUseCase.executeSdJWTMetadataWrapperCalled)
+    XCTAssertEqual(1, saveCredentialUseCase.executeSdJWTMetadataWrapperCallsCount)
+    XCTAssertTrue(checkAndUpdateCredentialStatusUseCase.executeForCalled)
+    XCTAssertEqual(1, checkAndUpdateCredentialStatusUseCase.executeForCallsCount)
+    XCTAssertTrue(checkAndUpdateCredentialStatusUseCase.executeForCalled)
+    XCTAssertEqual(1, checkAndUpdateCredentialStatusUseCase.executeForCallsCount)
+
+    XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
+    XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+
+    XCTAssertTrue(addActivityUseCase.executeTypeCredentialVerifierCalled)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.credential, credential)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.type, .credentialReceived)
+    XCTAssertNil(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.verifier)
   }
 
   func testValidateCredentialOfferSuccess_deeplink() async {
@@ -175,6 +240,11 @@ final class InvitationViewModelTests: XCTestCase {
 
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+
+    XCTAssertTrue(addActivityUseCase.executeTypeCredentialVerifierCalled)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.credential, credential)
+    XCTAssertEqual(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.type, .credentialReceived)
+    XCTAssertNil(addActivityUseCase.executeTypeCredentialVerifierReceivedArguments?.verifier)
   }
 
   func testValidateCredentialOfferFailure() async {
@@ -210,6 +280,7 @@ final class InvitationViewModelTests: XCTestCase {
     XCTAssertFalse(checkAndUpdateCredentialStatusUseCase.executeForCalled)
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+    XCTAssertFalse(addActivityUseCase.executeTypeCredentialVerifierCalled)
   }
 
   func testValidateCredentialOfferPinningFailure() async {
@@ -217,7 +288,7 @@ final class InvitationViewModelTests: XCTestCase {
 
     checkInvitationTypeUseCase.executeUrlReturnValue = .credentialOffer
     validateCredentialOfferInvitationUrlUseCase.executeReturnValue = mockCredentialOffer
-    fetchMetadataUseCase.executeFromThrowableError = NetworkError.pinning
+    fetchMetadataUseCase.executeFromThrowableError = NetworkError(status: .pinning)
 
     viewModel.isTorchEnabled = true
 
@@ -248,6 +319,7 @@ final class InvitationViewModelTests: XCTestCase {
     XCTAssertFalse(checkAndUpdateCredentialStatusUseCase.executeForCalled)
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+    XCTAssertFalse(addActivityUseCase.executeTypeCredentialVerifierCalled)
   }
 
   func testValidateCredentialOfferMismatchFailure() async {
@@ -288,6 +360,7 @@ final class InvitationViewModelTests: XCTestCase {
     XCTAssertFalse(checkAndUpdateCredentialStatusUseCase.executeForCalled)
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
+    XCTAssertFalse(addActivityUseCase.executeTypeCredentialVerifierCalled)
   }
 
   func testFetchCredentialExpired() async {
@@ -326,6 +399,7 @@ final class InvitationViewModelTests: XCTestCase {
     XCTAssertEqual(fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenCallsCount, 1)
     XCTAssertFalse(saveCredentialUseCase.executeSdJWTMetadataWrapperCalled)
     XCTAssertFalse(checkAndUpdateCredentialStatusUseCase.executeForCalled)
+    XCTAssertFalse(addActivityUseCase.executeTypeCredentialVerifierCalled)
     XCTAssertFalse(fetchRequestObjectUseCase.executeCalled)
     XCTAssertFalse(getCompatibleCredentialsUseCase.executeRequestObjectCalled)
   }
@@ -532,7 +606,7 @@ final class InvitationViewModelTests: XCTestCase {
   func testFetchMetadataFailed_networkError() async {
     checkInvitationTypeUseCase.executeUrlReturnValue = .credentialOffer
     validateCredentialOfferInvitationUrlUseCase.executeReturnValue = .Mock.sample
-    fetchMetadataUseCase.executeFromThrowableError = NetworkError.noConnection
+    fetchMetadataUseCase.executeFromThrowableError = NetworkError(status: .noConnection)
     fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenReturnValue = .Mock.sample
 
     await viewModel.send(event: .setMetadataUrl(url))
@@ -545,7 +619,7 @@ final class InvitationViewModelTests: XCTestCase {
     checkInvitationTypeUseCase.executeUrlReturnValue = .credentialOffer
     validateCredentialOfferInvitationUrlUseCase.executeReturnValue = .Mock.sample
     fetchMetadataUseCase.executeFromReturnValue = .Mock.sample
-    fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenThrowableError = NetworkError.noConnection
+    fetchCredentialUseCase.executeFromMetadataWrapperCredentialOfferAccessTokenThrowableError = NetworkError(status: .noConnection)
     saveCredentialUseCase.executeSdJWTMetadataWrapperReturnValue = .Mock.sample
     checkAndUpdateCredentialStatusUseCase.executeForReturnValue = .Mock.sample
 
@@ -590,7 +664,7 @@ final class InvitationViewModelTests: XCTestCase {
     let mockCompatibleCredential = CompatibleCredential(credential: mockCredential, fields: [])
 
     checkInvitationTypeUseCase.executeUrlReturnValue = .presentation
-    fetchRequestObjectUseCase.executeThrowableError = NetworkError.noConnection
+    fetchRequestObjectUseCase.executeThrowableError = NetworkError(status: .noConnection)
     getCompatibleCredentialsUseCase.executeRequestObjectReturnValue = [mockCompatibleCredential]
 
     await viewModel.send(event: .setMetadataUrl(url))
@@ -655,6 +729,7 @@ final class InvitationViewModelTests: XCTestCase {
   private var fetchCredentialUseCase: FetchCredentialUseCaseProtocolSpy!
   private var saveCredentialUseCase: SaveCredentialUseCaseProtocolSpy!
   private var checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocolSpy!
+  private var addActivityUseCase: AddActivityToCredentialUseCaseProtocolSpy!
   private var mockRequestObject: RequestObject!
 
   private var mockRouter = InvitationRouterMock()
@@ -682,6 +757,7 @@ extension InvitationViewModelTests {
       fetchCredentialUseCase = FetchCredentialUseCaseProtocolSpy()
       saveCredentialUseCase = SaveCredentialUseCaseProtocolSpy()
       checkAndUpdateCredentialStatusUseCase = CheckAndUpdateCredentialStatusUseCaseProtocolSpy()
+      addActivityUseCase = AddActivityToCredentialUseCaseProtocolSpy()
     } else {
       let reason = "use cases have to be configured in advance for the deeplink testing mode"
       XCTAssertNotNil(getCompatibleCredentialsUseCase, reason)
@@ -702,7 +778,8 @@ extension InvitationViewModelTests {
       fetchMetadataUseCase: fetchMetadataUseCase,
       fetchCredentialUseCase: fetchCredentialUseCase,
       saveCredentialUseCase: saveCredentialUseCase,
-      checkAndUpdateCredentialStatusUseCase: checkAndUpdateCredentialStatusUseCase)
+      checkAndUpdateCredentialStatusUseCase: checkAndUpdateCredentialStatusUseCase,
+      addActivityUseCase: addActivityUseCase)
   }
 
   private func createViewModel(mode: InvitationMode = .qr) -> InvitationViewModel {

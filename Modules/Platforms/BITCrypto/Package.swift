@@ -15,6 +15,7 @@ let package = Package(
       targets: ["BITCrypto"]),
   ],
   dependencies: [
+    .package(path: "../../Platforms/BITCore"),
     .package(url: "https://github.com/Matejkob/swift-spyable", revision: "8f78f36989bde9f06cc5a5254a6748c23c16b045"),
   ],
   targets: [
@@ -25,5 +26,8 @@ let package = Package(
       ]),
     .testTarget(
       name: "BITCryptoTests",
-      dependencies: ["BITCrypto"]),
+      dependencies: [
+        "BITCrypto",
+        .product(name: "BITTestingCore", package: "BITCore"),
+      ]),
   ])

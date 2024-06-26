@@ -1,3 +1,4 @@
+import BITAnalytics
 import BITCore
 import Combine
 import Factory
@@ -9,9 +10,11 @@ public class LicencesListViewModel: StateMachine<LicencesListViewModel.State, Li
 
   public init(
     _ initialState: State = .loading,
-    fetchPackagesUseCase: FetchPackagesUseCaseProtocol = Container.shared.fetchPackagesUseCase())
+    fetchPackagesUseCase: FetchPackagesUseCaseProtocol = Container.shared.fetchPackagesUseCase(),
+    analytics: AnalyticsProtocol = Container.shared.analytics())
   {
     self.fetchPackagesUseCase = fetchPackagesUseCase
+    self.analytics = analytics
     super.init(initialState)
   }
 
@@ -41,13 +44,17 @@ public class LicencesListViewModel: StateMachine<LicencesListViewModel.State, Li
       } onError: { error in
         .setError(error)
       }
+
     case (.loading, .setPackages(let packages)):
       self.packages = packages
       selectedPackage = packages.first
       state = self.packages.isEmpty ? .empty : .results
+
     case (_, .setError(let error)):
+      analytics.log(error)
       stateError = error
       state = .error
+
     case (.error, _):
       packages = []
 
@@ -70,6 +77,7 @@ public class LicencesListViewModel: StateMachine<LicencesListViewModel.State, Li
 
   // MARK: Private
 
+  private let analytics: AnalyticsProtocol
   private let fetchPackagesUseCase: FetchPackagesUseCaseProtocol
 
 }

@@ -8,19 +8,19 @@ import UIKit
 // MARK: - InvitationRoutes
 
 public protocol InvitationRoutes {
-  func deeplink(url: URL, animated: Bool)
+  func deeplink(url: URL, animated: Bool) -> Bool
 }
 
 @MainActor
 extension InvitationRoutes where Self: RouterProtocol {
 
-  public func deeplink(url: URL, animated: Bool) {
+  public func deeplink(url: URL, animated: Bool) -> Bool {
     guard let topViewController = UIApplication.topViewController, !topViewController.className.contains("LoginHostingController") else {
-      return
+      return false
     }
 
     let deeplinkManager = DeeplinkManager(allowedRoutes: RootDeeplinkRoute.allCases)
-    guard let route = try? deeplinkManager.dispatchFirst(url) else { return }
+    guard let route = try? deeplinkManager.dispatchFirst(url) else { return false }
 
     switch route {
     case .credential:
@@ -31,9 +31,11 @@ extension InvitationRoutes where Self: RouterProtocol {
 
       open(viewController, on: topViewController, as: style)
     }
+
+    return true
   }
 
-  public func deeplink(url: URL) {
+  public func deeplink(url: URL) -> Bool {
     deeplink(url: url, animated: true)
   }
 

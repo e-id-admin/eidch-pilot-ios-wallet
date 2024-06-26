@@ -7,10 +7,10 @@ struct PepperService: PepperServiceProtocol {
   // MARK: Lifecycle
 
   public init(
-    hasher: Encryptable = Container.shared.hasher(),
+    pepperKeyInitialVectorLength: Int = Container.shared.pepperKeyInitialVectorLength(),
     pepperRepository: PepperRepositoryProtocol = Container.shared.pepperRepository())
   {
-    self.hasher = hasher
+    self.pepperKeyInitialVectorLength = pepperKeyInitialVectorLength
     self.pepperRepository = pepperRepository
   }
 
@@ -23,11 +23,11 @@ struct PepperService: PepperServiceProtocol {
 
   // MARK: Private
 
-  private let hasher: Encryptable
+  private let pepperKeyInitialVectorLength: Int
   private let pepperRepository: PepperRepositoryProtocol
 
   private func generateInitialVector() throws {
-    let initialVector = try hasher.generateRandomBytes(length: hasher.algorithm.initialVectorSize)
+    let initialVector = try Data.random(length: pepperKeyInitialVectorLength)
     try pepperRepository.setPepperInitialVector(initialVector)
   }
 

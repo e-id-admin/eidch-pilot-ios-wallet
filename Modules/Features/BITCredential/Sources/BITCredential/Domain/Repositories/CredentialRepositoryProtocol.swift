@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITSdJWT
 import Foundation
 import Spyable

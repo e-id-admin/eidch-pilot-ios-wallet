@@ -2,6 +2,8 @@ import XCTest
 
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITTestingCore
 
 @MainActor
@@ -16,6 +18,7 @@ final class CredentialDetailViewModelTests: XCTestCase {
   func test_init() {
     XCTAssertFalse(viewModel.isPoliceQRCodePresented)
     XCTAssertFalse(viewModel.isDeleteCredentialPresented)
+    XCTAssertFalse(viewModel.isActivitiesListPresented)
 
     XCTAssertEqual(viewModel.credential, credential)
     XCTAssertEqual(viewModel.credentialBody, CredentialDetailBody(from: credential))
@@ -25,6 +28,16 @@ final class CredentialDetailViewModelTests: XCTestCase {
     checkAndUpdateCredentialStatusUseCaseSpy.executeForReturnValue = credential
 
     await viewModel.onAppear()
+
+    XCTAssertTrue(checkAndUpdateCredentialStatusUseCaseSpy.executeForCalled)
+    XCTAssertNotNil(viewModel.credentialBody)
+    XCTAssertEqual(viewModel.credentialBody, CredentialDetailBody(from: credential))
+  }
+
+  func test_onRefresh() async {
+    checkAndUpdateCredentialStatusUseCaseSpy.executeForReturnValue = credential
+
+    await viewModel.refresh()
 
     XCTAssertTrue(checkAndUpdateCredentialStatusUseCaseSpy.executeForCalled)
     XCTAssertNotNil(viewModel.credentialBody)

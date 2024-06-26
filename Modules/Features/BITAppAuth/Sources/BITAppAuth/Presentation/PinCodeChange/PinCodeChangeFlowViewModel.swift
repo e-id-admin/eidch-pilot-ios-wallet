@@ -13,6 +13,7 @@ public enum PinCodeChangeStep: Int, CaseIterable {
 
 // MARK: - PinCodeChangeFlowViewModel
 
+@MainActor
 public class PinCodeChangeFlowViewModel: ObservableObject {
 
   // MARK: Lifecycle
@@ -95,7 +96,6 @@ public class PinCodeChangeFlowViewModel: ObservableObject {
     do {
       uniquePassphrase = try getUniquePassphraseUseCase.execute(from: pin)
       currentIndex = PinCodeChangeStep.newPin.rawValue
-
     } catch {
       handleError(for: .currentPin)
     }

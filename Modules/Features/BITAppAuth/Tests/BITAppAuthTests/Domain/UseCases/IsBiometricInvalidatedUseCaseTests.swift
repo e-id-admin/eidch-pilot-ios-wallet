@@ -21,7 +21,7 @@ final class IsBiometricInvalidatedUseCaseTests: XCTestCase {
       uniquePassphraseManager: spyUniquePassphraseManager)
   }
 
-  func testBiometricAreValid() {
+  func testBiometricAreValid() throws {
     spyUniquePassphraseManager.existsForReturnValue = true
     spyIsBiometricUsageAllowed.executeReturnValue = true
     spyHasBiometricAuth.executeReturnValue = true
@@ -33,7 +33,7 @@ final class IsBiometricInvalidatedUseCaseTests: XCTestCase {
     XCTAssertTrue(spyHasBiometricAuth.executeCalled)
   }
 
-  func testBiometricInvalid_uniquePassphraseMissing() {
+  func testBiometricInvalid_uniquePassphraseMissing() throws {
     spyUniquePassphraseManager.existsForReturnValue = false
     spyIsBiometricUsageAllowed.executeReturnValue = true
     spyHasBiometricAuth.executeReturnValue = true
@@ -45,7 +45,7 @@ final class IsBiometricInvalidatedUseCaseTests: XCTestCase {
     XCTAssertTrue(spyHasBiometricAuth.executeCalled)
   }
 
-  func testBiometricAreValid_isBiometricUsageForbidden() {
+  func testBiometricAreValid_isBiometricUsageForbidden() throws {
     spyUniquePassphraseManager.existsForReturnValue = true
     spyIsBiometricUsageAllowed.executeReturnValue = false
     spyHasBiometricAuth.executeReturnValue = true
@@ -57,7 +57,7 @@ final class IsBiometricInvalidatedUseCaseTests: XCTestCase {
     XCTAssertFalse(spyHasBiometricAuth.executeCalled)
   }
 
-  func testBiometricAreValid_hasNoBiometricAuth() {
+  func testBiometricAreValid_hasNoBiometricAuth() throws {
     spyUniquePassphraseManager.existsForReturnValue = true
     spyIsBiometricUsageAllowed.executeReturnValue = true
     spyHasBiometricAuth.executeReturnValue = false

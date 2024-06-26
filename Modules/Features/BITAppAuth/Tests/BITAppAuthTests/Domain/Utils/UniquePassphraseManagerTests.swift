@@ -14,21 +14,15 @@ final class UniquePassphraseManagerTests: XCTestCase {
   override func setUp() {
     spyIsBiometricUsageAllowedUseCase = IsBiometricUsageAllowedUseCaseProtocolSpy()
     spyUniquePassphraseRepository = UniquePassphraseRepositoryProtocolSpy()
-    spyEncrypter = EncryptableSpy()
     uniquePassphraseManager = UniquePassphraseManager(
       isBiometricUsageAllowedUseCase: spyIsBiometricUsageAllowedUseCase,
       uniquePassphraseRepository: spyUniquePassphraseRepository,
-      hasher: spyEncrypter,
-      passphraseLength: passphraseLength)
+      passphraseLength: Self.passphraseLength)
   }
 
   func testGenerate() throws {
-    let mockUniquePassphrase: Data = .init()
-    spyEncrypter.generateRandomBytesLengthReturnValue = mockUniquePassphrase
     let uniquePassphrase = try uniquePassphraseManager.generate()
-    XCTAssertEqual(mockUniquePassphrase, uniquePassphrase)
-    XCTAssertTrue(spyEncrypter.generateRandomBytesLengthCalled)
-    XCTAssertEqual(passphraseLength, spyEncrypter.generateRandomBytesLengthReceivedLength)
+    XCTAssertEqual(Self.passphraseLength, uniquePassphrase.count)
   }
 
   func testSaveWithBiometrics() throws {
@@ -50,24 +44,24 @@ final class UniquePassphraseManagerTests: XCTestCase {
   }
 
   func testExistsForAppPin() throws {
-    testExists(authMethod: .appPin)
+    try testExists(authMethod: .appPin)
   }
 
   func testExistsForBiometric() throws {
-    testExists(authMethod: .biometric)
+    try testExists(authMethod: .biometric)
   }
 
   func testNotExistsForAppPin() throws {
-    testNotExists(authMethod: .appPin)
+    try testNotExists(authMethod: .appPin)
   }
 
   func testNotExistsForBiometric() throws {
-    testNotExists(authMethod: .biometric)
+    try testNotExists(authMethod: .biometric)
   }
 
   // MARK: Private
 
-  private let passphraseLength = 6
+  private static let passphraseLength = 64
 
   // swiftlint:disable all
   private var spyIsBiometricUsageAllowedUseCase: IsBiometricUsageAllowedUseCaseProtocolSpy!
@@ -110,7 +104,7 @@ extension UniquePassphraseManagerTests {
     XCTAssertEqual(authMethod, spyUniquePassphraseRepository.getUniquePassphraseForAuthMethodInContextReceivedArguments?.authMethod)
   }
 
-  private func testExists(authMethod: AuthMethod) {
+  private func testExists(authMethod: AuthMethod) throws {
     spyUniquePassphraseRepository.hasUniquePassphraseSavedForAuthMethodReturnValue = true
     let exists = uniquePassphraseManager.exists(for: authMethod)
     XCTAssertTrue(exists)
@@ -118,7 +112,7 @@ extension UniquePassphraseManagerTests {
     XCTAssertEqual(authMethod, spyUniquePassphraseRepository.hasUniquePassphraseSavedForAuthMethodReceivedAuthMethod)
   }
 
-  private func testNotExists(authMethod: AuthMethod) {
+  private func testNotExists(authMethod: AuthMethod) throws {
     spyUniquePassphraseRepository.hasUniquePassphraseSavedForAuthMethodReturnValue = false
     let exists = uniquePassphraseManager.exists(for: authMethod)
     XCTAssertFalse(exists)

@@ -49,7 +49,8 @@ final class Tests: XCTestCase {
     do {
       let _: (FakeModel, Response) = try await NetworkService().request(FakeAPI.someEndpoint)
     } catch {
-      XCTAssertEqual(error as? NetworkError, .internalServerError)
+      guard let error = error as? NetworkError else { return XCTFail("Expected a NetworkError.") }
+      XCTAssertEqual(error.status, .internalServerError)
     }
   }
 

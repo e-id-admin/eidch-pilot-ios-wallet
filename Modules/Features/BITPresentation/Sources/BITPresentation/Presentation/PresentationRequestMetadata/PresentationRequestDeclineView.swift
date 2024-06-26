@@ -28,7 +28,7 @@ struct PresentationRequestDeclineView: View {
         Label(L10n.globalBackHome, systemImage: "arrow.backward")
           .frame(maxWidth: .infinity)
       }
-      .buttonStyle(.secondaryProminant)
+      .buttonStyle(.secondary)
     }
     .padding(.x4)
   }

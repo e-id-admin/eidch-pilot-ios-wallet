@@ -1,5 +1,5 @@
+import BITAnalytics
 import BITCore
-import BITCredential
 import Combine
 import Factory
 import Foundation
@@ -17,6 +17,7 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
     selectedCredential: CompatibleCredential,
     submitPresentationUseCase: SubmitPresentationUseCaseProtocol = Container.shared.submitPresentationUseCase(),
     denyPresentationUseCase: DenyPresentationUseCaseProtocol = Container.shared.denyPresentationUseCase(),
+    analytics: AnalyticsProtocol = Container.shared.analytics(),
     completed: (() -> Void)? = nil)
   {
     self.requestObject = requestObject
@@ -24,12 +25,14 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
     self.selectedCredential = selectedCredential
     self.submitPresentationUseCase = submitPresentationUseCase
     self.denyPresentationUseCase = denyPresentationUseCase
+    self.analytics = analytics
 
     do {
       presentationMetadata = try PresentationMetadata(selectedCredential, verifier: requestObject.clientMetadata)
       super.init(initialState)
     } catch {
       super.init(.error)
+      analytics.log(error)
       stateError = error
     }
   }
@@ -42,7 +45,7 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
     case invalidCredentialError
   }
 
-  public enum Event {
+  public enum Event: AnalyticsEventProtocol {
     case close
     case deny
     case submit
@@ -62,8 +65,12 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
       isRequestDeclineViewPresented = true
 
     case .deny:
+      guard let presentationMetadata else {
+        return Just(.setError(PresentationDefinitionError.presentationMetadataNotFound)).eraseToAnyPublisher()
+      }
+
       return AnyPublisher.run(withDelay: 0.5) {
-        try await self.denyPresentationUseCase.execute(requestObject: self.requestObject)
+        try await self.denyPresentationUseCase.execute(for: self.selectedCredential.credential, requestObject: self.requestObject, and: presentationMetadata)
       } onSuccess: {
         .didDenyPresentation
       } onError: { error in
@@ -75,16 +82,12 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
         return Just(.setError(PresentationDefinitionError.presentationMetadataNotFound)).eraseToAnyPublisher()
       }
 
-      guard let rawCredential = selectedCredential.credential.rawCredentials.sdJWT else {
-        return Just(.setError(PresentationDefinitionError.invalidCredential)).eraseToAnyPublisher()
-      }
-
       isLoading = true
 
       return AnyPublisher.run(withDelay: 0.5) {
         try await self.submitPresentationUseCase.execute(
           requestObject: self.requestObject,
-          rawCredential: rawCredential,
+          credential: self.selectedCredential.credential,
           presentationMetadata: presentationMetadata)
       } onSuccess: {
         .onSuccess
@@ -99,6 +102,7 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
     case .setError(let error):
       isLoading = false
       stateError = error
+      analytics.log(error)
 
       guard let presentationError = error as? SubmitPresentationError, presentationError == .credentialInvalid else {
         state = .error
@@ -120,7 +124,6 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
   enum PresentationDefinitionError: Error {
     case noCompatibleCredentials
     case invalidRequestObject
-    case invalidCredential
     case presentationMetadataNotFound
   }
 
@@ -135,6 +138,7 @@ public class PresentationRequestMetadataViewModel: StateMachine<PresentationRequ
 
   // MARK: Private
 
+  private let analytics: AnalyticsProtocol
   private let submitPresentationUseCase: SubmitPresentationUseCaseProtocol
   private let denyPresentationUseCase: DenyPresentationUseCaseProtocol
 }

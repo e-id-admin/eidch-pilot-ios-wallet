@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITTheming
 import Factory
 import Foundation
@@ -29,7 +30,7 @@ public struct CredentialOfferView: View {
             .padding(.x4)
         }
 
-        CredentialDetailContentView(credential: viewModel.credential)
+        CredentialDetailContentView(credential: viewModel.credential, title: L10n.credentialOfferContentSectionTitle, message: L10n.credentialOfferSupportMessage)
 
         VStack(alignment: .leading, spacing: .x3) {
           Button(action: {
@@ -38,7 +39,7 @@ public struct CredentialOfferView: View {
             Label(L10n.credentialOfferRefuseButton, systemImage: "xmark")
               .frame(maxWidth: .infinity)
           })
-          .buttonStyle(.secondaryProminant)
+          .buttonStyle(.secondary)
 
           Button(action: {
             viewModel.accept()

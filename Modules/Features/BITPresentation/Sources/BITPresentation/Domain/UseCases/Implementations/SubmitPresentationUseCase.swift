@@ -1,4 +1,6 @@
+import BITActivity
 import BITCredential
+import BITCredentialShared
 import BITNetworking
 import Factory
 import Foundation
@@ -19,15 +21,21 @@ public struct SubmitPresentationUseCase: SubmitPresentationUseCaseProtocol {
 
   public init(
     jwtGenerator: PresentationJWTGeneratorProtocol = Container.shared.presentationJWTGenerator(),
-    repository: PresentationRepositoryProtocol = Container.shared.presentationRepository())
+    repository: PresentationRepositoryProtocol = Container.shared.presentationRepository(),
+    addActivityUseCase: AddActivityToCredentialUseCaseProtocol = Container.shared.addActivityUseCase())
   {
     self.jwtGenerator = jwtGenerator
     self.repository = repository
+    self.addActivityUseCase = addActivityUseCase
   }
 
   // MARK: Public
 
-  public func execute(requestObject: RequestObject, rawCredential: RawCredential, presentationMetadata: PresentationMetadata) async throws {
+  public func execute(requestObject: RequestObject, credential: Credential, presentationMetadata: PresentationMetadata) async throws {
+    guard let rawCredential = credential.rawCredentials.sdJWT else {
+      throw SubmitPresentationError.credentialInvalid
+    }
+
     let vpToken = try jwtGenerator.generate(requestObject: requestObject, rawCredential: rawCredential, presentationMetadata: presentationMetadata)
 
     let descriptorMap: [PresentationRequestBody.DescriptorMap] = requestObject.presentationDefinition.inputDescriptors
@@ -48,12 +56,19 @@ public struct SubmitPresentationUseCase: SubmitPresentationUseCaseProtocol {
 
     do {
       try await repository.submitPresentation(from: submissionURL, presentationRequestBody: submitPresentationBody)
-    } catch NetworkError.unprocessableEntity, NetworkError.internalServerError {
-      throw SubmitPresentationError.presentationFailed
-    } catch NetworkError.badRequest, NetworkError.invalidGrant {
-      throw SubmitPresentationError.credentialInvalid
+      try? await addActivityUseCase.execute(type: .presentationAccepted, credential: credential, verifier: ActivityVerifier(presentationMetadata))
     } catch {
-      throw error
+      guard let err = error as? NetworkError else { throw error }
+      switch err.status {
+      case .internalServerError,
+           .unprocessableEntity:
+        throw SubmitPresentationError.presentationFailed
+      case .badRequest,
+           .invalidGrant:
+        try? await addActivityUseCase.execute(type: .presentationAccepted, credential: credential, verifier: ActivityVerifier(presentationMetadata))
+        throw SubmitPresentationError.credentialInvalid
+      default: throw error
+      }
     }
   }
 
@@ -61,5 +76,6 @@ public struct SubmitPresentationUseCase: SubmitPresentationUseCaseProtocol {
 
   private let jwtGenerator: PresentationJWTGeneratorProtocol
   private let repository: PresentationRepositoryProtocol
+  private let addActivityUseCase: AddActivityToCredentialUseCaseProtocol
 
 }

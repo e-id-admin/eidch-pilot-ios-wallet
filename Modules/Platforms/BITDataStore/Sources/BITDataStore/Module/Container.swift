@@ -8,8 +8,4 @@ extension Container {
     self { CoreDataStore(containerName: "pilotWallet") }.singleton
   }
 
-  public var dataStoreLogger: Factory<Logger> {
-    self { Logger(subsystem: "BITDataStore", category: "Database") }.cached
-  }
-
 }

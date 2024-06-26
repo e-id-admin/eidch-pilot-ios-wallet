@@ -54,7 +54,7 @@ struct CameraPermissionView: View {
               Label(L10n.globalBackHome, systemImage: "arrow.backward")
                 .frame(maxWidth: .infinity)
             })
-            .buttonStyle(.secondaryProminant)
+            .buttonStyle(.secondary)
 
             Button(action: {
               Task {
@@ -92,7 +92,7 @@ struct CameraPermissionView: View {
               Label(L10n.globalBackHome, systemImage: "arrow.backward")
                 .frame(maxWidth: .infinity)
             })
-            .buttonStyle(.secondaryProminant)
+            .buttonStyle(.secondary)
 
             Button(action: {
               Task {

@@ -26,10 +26,14 @@ let package = Package(
     .package(path: "../../Platforms/BITVault"),
     .package(path: "../../Platforms/BITDataStore"),
     .package(path: "../../Platforms/BITLocalAuthentication"),
+    .package(path: "../../Platforms/BITAnalytics"),
+    .package(path: "../BITCredentialShared"),
+    .package(path: "../BITActivity"),
     .package(url: "https://github.com/hmlongco/Factory", exact: "2.2.0"),
     .package(url: "https://github.com/Matejkob/swift-spyable", revision: "8f78f36989bde9f06cc5a5254a6748c23c16b045"),
     .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", exact: "2.2.6"),
     .package(url: "https://github.com/KittyMac/Sextant.git", revision: "e59c57e4fa19a02f336cd91b9f6cd8e4022e5ed0"),
+    .package(url: "https://github.com/gh123man/SwiftUI-Refresher", exact: "1.1.8"),
   ],
   targets: [
     .target(
@@ -43,10 +47,14 @@ let package = Package(
         .product(name: "BITVault", package: "BITVault"),
         .product(name: "BITDataStore", package: "BITDataStore"),
         .product(name: "BITLocalAuthentication", package: "BITLocalAuthentication"),
+        .product(name: "BITAnalytics", package: "BITAnalytics"),
+        .product(name: "BITCredentialShared", package: "BITCredentialShared"),
+        .product(name: "BITActivity", package: "BITActivity"),
         .product(name: "Factory", package: "Factory"),
         .product(name: "Spyable", package: "swift-spyable"),
         .product(name: "Sextant", package: "Sextant"),
         .product(name: "SDWebImageSwiftUI", package: "SDWebImageSwiftUI"),
+        .product(name: "Refresher", package: "SwiftUI-Refresher"),
       ],
       resources: [.process("Resources")]),
     .target(
@@ -61,8 +69,10 @@ let package = Package(
       name: "BITCredentialTests",
       dependencies: [
         "BITCredential",
+        .product(name: "BITCredentialSharedMocks", package: "BITCredentialShared"),
         .product(name: "BITSdJWTMocks", package: "BITSdJWT"),
         "BITCredentialMocks",
         .product(name: "BITTestingCore", package: "BITCore"),
+        .product(name: "BITActivityMocks", package: "BITActivity"),
       ]),
   ])

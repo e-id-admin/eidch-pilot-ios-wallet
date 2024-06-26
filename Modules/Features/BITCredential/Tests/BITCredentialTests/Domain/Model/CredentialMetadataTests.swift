@@ -1,7 +1,10 @@
 import BITCore
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 
 final class CredentialMetadataTests: XCTestCase {
 

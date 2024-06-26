@@ -1,4 +1,6 @@
+import BITCredentialShared
 import BITTheming
+import Factory
 import SwiftUI
 
 // MARK: - CredentialDeleteView
@@ -7,9 +9,8 @@ public struct CredentialDeleteView: View {
 
   // MARK: Lifecycle
 
-  init(_ credential: Credential, isPresented: Binding<Bool>) {
-    _isPresented = isPresented
-    _viewModel = StateObject(wrappedValue: CredentialDeleteViewModel(credential: credential))
+  init(_ credential: Credential, isPresented: Binding<Bool>, isHomePresented: Binding<Bool>) {
+    _viewModel = StateObject(wrappedValue: Container.shared.credentialDeleteViewModel((credential, isPresented: isPresented, isHomePresented: isHomePresented)))
   }
 
   // MARK: Public
@@ -24,7 +25,6 @@ public struct CredentialDeleteView: View {
   // MARK: Internal
 
   @StateObject var viewModel: CredentialDeleteViewModel
-  @Binding var isPresented: Bool
 
   // MARK: Private
 
@@ -46,13 +46,11 @@ public struct CredentialDeleteView: View {
       .padding(.bottom, .x25)
 
       VStack {
-        Button(action: {
-          isPresented.toggle()
-        }, label: {
+        Button(action: viewModel.cancel, label: {
           Label(L10n.credentialDeleteCancelButton, systemImage: "xmark")
             .frame(maxWidth: .infinity)
         })
-        .buttonStyle(.secondaryProminant)
+        .buttonStyle(.secondary)
 
         Button(action: {
           Task {

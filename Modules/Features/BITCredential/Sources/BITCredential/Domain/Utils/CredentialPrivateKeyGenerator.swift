@@ -6,18 +6,18 @@ import Foundation
 
 // MARK: - CredentialJWTGenerator
 
-struct CredentialPrivateKeyGenerator: CredentialPrivateKeyGeneratorProtocol {
+struct CredentialPrivateKeyGenerator: CredentialKeyPairGeneratorProtocol {
 
   // MARK: Lifecycle
 
   init(
-    vault: VaultProtocol = Container.shared.vault(),
+    keyManager: KeyManagerProtocol = Container.shared.keyManager(),
     vaultAccessControlFlags: SecAccessControlCreateFlags = Container.shared.vaultAccessControlFlags(),
     vaultProtection: CFString = Container.shared.vaultProtection(),
     vaultOptions: VaultOption = Container.shared.vaultOptions(),
     context: LAContextProtocol = Container.shared.authContext())
   {
-    self.vault = vault
+    self.keyManager = keyManager
     self.vaultAccessControlFlags = vaultAccessControlFlags
     self.vaultProtection = vaultProtection
     self.vaultOptions = vaultOptions
@@ -27,18 +27,22 @@ struct CredentialPrivateKeyGenerator: CredentialPrivateKeyGeneratorProtocol {
   // MARK: Internal
 
   func generate(identifier: UUID, algorithm: String) throws -> SecKey {
-    try vault.generatePrivateKey(
+    let query = try QueryBuilder()
+      .setAccessControlFlags(vaultAccessControlFlags)
+      .setProtection(vaultProtection)
+      .setContext(context)
+      .build()
+
+    return try keyManager.generateKeyPair(
       withIdentifier: identifier.uuidString,
       algorithm: VaultAlgorithm(fromSignatureAlgorithm: algorithm),
-      accessControlFlags: vaultAccessControlFlags,
-      protection: vaultProtection,
       options: vaultOptions,
-      context: context)
+      query: query)
   }
 
   // MARK: Private
 
-  private let vault: VaultProtocol
+  private let keyManager: KeyManagerProtocol
   private let vaultAccessControlFlags: SecAccessControlCreateFlags
   private let vaultProtection: CFString
   private let vaultOptions: VaultOption

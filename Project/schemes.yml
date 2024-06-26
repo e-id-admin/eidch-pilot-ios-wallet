@@ -61,3 +61,21 @@ schemes:
       config: Prod (release)
       customArchiveName: pilotWallet-Prod
       revealArchiveInOrganizer: true
+
+  pilotWallet UITests:
+    build:
+      targets:
+        pilotWallet: all
+    run:
+      config: Dev (debug)
+    test:
+      targets:
+        - pilotWalletUITests
+    profile:
+      config: Dev (release)
+    analyze:
+      config: Dev (debug)
+    archive:
+      config: Dev (release)
+      customArchiveName: pilotWallet-Runner
+      revealArchiveInOrganizer: true

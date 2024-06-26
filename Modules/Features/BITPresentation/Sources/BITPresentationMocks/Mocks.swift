@@ -1,5 +1,7 @@
 import Foundation
-@testable import BITCredentialMocks
+
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITPresentation
 @testable import BITTestingCore
 
@@ -24,7 +26,7 @@ extension PresentationMetadata {
   struct Mock {
     static func sample() -> PresentationMetadata {
       let requestObject: RequestObject = Mocker.decode(fromData: RequestObject.Mock.sampleData)
-      return PresentationMetadata(attributes: Field.Mock.array, verifier: requestObject.clientMetadata)
+      return PresentationMetadata(attributes: PresentationMetadata.Field.Mock.array, verifier: requestObject.clientMetadata)
     }
   }
 }
@@ -34,9 +36,18 @@ extension PresentationMetadata {
 extension PresentationMetadata.Field {
   struct Mock {
     static let array: [PresentationMetadata.Field] = [
-      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname"),
-      PresentationMetadata.Field(key: "lastName", value: "value", type: .string, displayName: "Lastname"),
-      PresentationMetadata.Field(key: "dateOfBirth", value: "value", type: .string, displayName: "Date of birth"),
+      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname", order: 2, displays: [
+        .init(.init(locale: "fr-CH", name: "Prenom"), claimId: UUID()),
+        .init(.init(locale: "de-CH", name: "Vorname"), claimId: UUID()),
+      ]),
+      PresentationMetadata.Field(key: "lastName", value: "value", type: .string, displayName: "Lastname", order: 1, displays: [
+        .init(.init(locale: "fr-CH", name: "Nom"), claimId: UUID()),
+        .init(.init(locale: "de-CH", name: "Nachname"), claimId: UUID()),
+      ]),
+      PresentationMetadata.Field(key: "dateOfBirth", value: "value", type: .string, displayName: "Date of birth", order: 3, displays: [
+        .init(.init(locale: "fr-CH", name: "Date de naissance"), claimId: UUID()),
+        .init(.init(locale: "de-CH", name: "Geburstag"), claimId: UUID()),
+      ]),
     ]
   }
 }

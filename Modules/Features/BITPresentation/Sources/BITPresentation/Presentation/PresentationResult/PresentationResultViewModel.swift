@@ -1,5 +1,4 @@
 import BITCore
-import BITCredential
 import Combine
 import Factory
 import Foundation
@@ -11,18 +10,24 @@ public class PresentationResultViewModel: ObservableObject {
 
   public init(
     presentationMetadata: PresentationMetadata,
+    date: Date = Date(),
     completed: @escaping () -> Void)
   {
     self.presentationMetadata = presentationMetadata
+    self.date = date
     self.completed = completed
-
-    date = DateFormatter.presentationResult.string(from: Date())
   }
 
   // MARK: Internal
 
-  var completed: () -> Void
-
+  let completed: () -> Void
   let presentationMetadata: PresentationMetadata
-  let date: String
+
+  var formattedDate: String {
+    "\(DateFormatter.longDateFormatter.string(from: date)) | \(DateFormatter.shortHourFormatter.string(from: date))"
+  }
+
+  // MARK: Private
+
+  private let date: Date
 }

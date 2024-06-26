@@ -1,10 +1,18 @@
+import BITAnalytics
 import BITAppAuth
 import BITCore
 import BITLocalAuthentication
+import BITSettings
 import Combine
 import Factory
 import Foundation
 import SwiftUI
+
+// MARK: - OnboardingFlowDelegate
+
+public protocol OnboardingFlowDelegate: AnyObject {
+  func didCompleteOnboarding()
+}
 
 // MARK: - OnboardingFlowViewModel
 
@@ -20,7 +28,9 @@ public class OnboardingFlowViewModel: ObservableObject {
     registerPinCodeUseCase: RegisterPinCodeUseCaseProtocol = Container.shared.registerPinCodeUseCase(),
     requestBiometricAuthUseCase: RequestBiometricAuthUseCaseProtocol = Container.shared.requestBiometricAuthUseCase(),
     allowBiometricUsageUseCase: AllowBiometricUsageUseCaseProtocol = Container.shared.allowBiometricUsageUseCase(),
-    onboardingSuccessUseCase: OnboardingSuccessUseCaseProtocol = Container.shared.onboardingSuccessUseCase())
+    onboardingSuccessUseCase: OnboardingSuccessUseCaseProtocol = Container.shared.onboardingSuccessUseCase(),
+    analytics: AnalyticsProtocol = Container.shared.analytics(),
+    updatePrivacyPolicyUseCase: UpdateAnalyticStatusUseCaseProtocol = Container.shared.updateAnalyticsStatusUseCase())
   {
     self.routes = routes
     self.getBiometricTypeUseCase = getBiometricTypeUseCase
@@ -29,10 +39,16 @@ public class OnboardingFlowViewModel: ObservableObject {
     self.requestBiometricAuthUseCase = requestBiometricAuthUseCase
     self.allowBiometricUsageUseCase = allowBiometricUsageUseCase
     self.onboardingSuccessUseCase = onboardingSuccessUseCase
+    self.analytics = analytics
+    self.updatePrivacyPolicyUseCase = updatePrivacyPolicyUseCase
     biometricType = getBiometricTypeUseCase.execute()
     hasBiometricAuth = hasBiometricAuthUseCase.execute()
     configureObservers()
   }
+
+  // MARK: Public
+
+  public weak var delegate: OnboardingFlowDelegate?
 
   // MARK: Internal
 
@@ -40,7 +56,15 @@ public class OnboardingFlowViewModel: ObservableObject {
     case wallet = 0, qrCode, privacy, pin, pinConfirmation, biometrics
   }
 
-  var onComplete: (() -> Void)?
+  enum AnalyticsEvent: Error {
+    case attemptLimitReached
+    case skipToPrivacyStep
+    case skipBiometrics
+    case biometricNotAllowed
+    case biometricRegistrationFailed
+    case biometricDone
+  }
+
   @Published var pin: String = ""
   @Published var confirmationPin: String = ""
   @Published var pinConfirmationState: PinCodeState = .normal
@@ -90,6 +114,14 @@ public class OnboardingFlowViewModel: ObservableObject {
     isKeyPadDisabled = false
   }
 
+  func acceptPrivacyPolicy() async {
+    await updatePrivacyPolicyUseCase.execute(isAllowed: true)
+  }
+
+  func declinePrivacyPolicy() async {
+    await updatePrivacyPolicyUseCase.execute(isAllowed: false)
+  }
+
   // MARK: Private
 
   private let routes: OnboardingRouter.Routes
@@ -107,6 +139,9 @@ public class OnboardingFlowViewModel: ObservableObject {
   private var requestBiometricAuthUseCase: RequestBiometricAuthUseCaseProtocol
   private var allowBiometricUsageUseCase: AllowBiometricUsageUseCaseProtocol
   private var onboardingSuccessUseCase: OnboardingSuccessUseCaseProtocol
+  private var updatePrivacyPolicyUseCase: UpdateAnalyticStatusUseCaseProtocol
+
+  private let analytics: AnalyticsProtocol
 
   private func setPinCode(_ pin: PinCode) {
     guard !pin.isEmpty, pin.count == pinCodeSize else { return }
@@ -212,14 +247,17 @@ public class OnboardingFlowViewModel: ObservableObject {
 
     do {
       try done()
-    } catch {}
+    } catch {
+      analytics.log(AnalyticsEvent.biometricRegistrationFailed)
+    }
   }
 
   private func done() throws {
     try registerPinCodeUseCase.execute(pinCode: pin)
     try onboardingSuccessUseCase.execute()
+
     routes.close(onComplete: nil)
-    onComplete?()
+    delegate?.didCompleteOnboarding()
   }
 
   private func checkBiometricStatus() {

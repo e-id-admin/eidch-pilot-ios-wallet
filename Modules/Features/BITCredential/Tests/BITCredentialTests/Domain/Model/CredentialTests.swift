@@ -1,8 +1,9 @@
 import BITCore
 import Factory
 import XCTest
-@testable import BITCredential
-@testable import BITCredentialMocks
+
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 
 final class CredentialTests: XCTestCase {
 
@@ -68,6 +69,14 @@ final class CredentialTests: XCTestCase {
       let claimDisplay = claim.preferredDisplay
       XCTAssertNil(claimDisplay)
     }
+  }
+
+  func testCopy() {
+    let mockCredential: Credential = .Mock.sample
+
+    let credentialCopy = mockCredential.copy()
+
+    XCTAssertEqual(mockCredential, credentialCopy)
   }
 
   // MARK: Private

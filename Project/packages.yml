@@ -27,6 +27,10 @@ packages:
     path: Modules/Platforms/BITSdJWT
   BITLocalAuthentication:
     path: Modules/Platforms/BITLocalAuthentication
+  BITAnalytics:
+    path: Modules/Platforms/BITAnalytics
+  BITSecurity:
+    path: Modules/Platforms/BITSecurity
 
   BITAppAuth:
     path: Modules/Features/BITAppAuth
@@ -44,3 +48,7 @@ packages:
     path: Modules/Features/BITPresentation
   BITHome:
     path: Modules/Features/BITHome
+  BITCredentialShared:
+    path: Modules/Features/BITCredentialShared
+  BITActivity:
+    path: Modules/Features/BITActivity

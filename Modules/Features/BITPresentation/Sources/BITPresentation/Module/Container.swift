@@ -1,4 +1,3 @@
-import BITCredential
 import BITSdJWT
 import BITVault
 import Factory
@@ -26,6 +25,14 @@ extension Container {
       PresentationCredentialListViewModel(requestObject: $0, compatibleCredentials: $1, completed: $2)
     }
   }
+}
+
+extension Container {
+
+  var presentationErrorViewModel: Factory<PresentationErrorViewModel> {
+    self { PresentationErrorViewModel() }
+  }
+
 }
 
 // MARK: - Repository
@@ -69,8 +76,8 @@ extension Container {
 
   // MARK: Internal
 
-  var vault: Factory<VaultProtocol> {
-    self { Vault() }
+  var keyManager: Factory<KeyManagerProtocol> {
+    self { KeyManager() }
   }
 
 }

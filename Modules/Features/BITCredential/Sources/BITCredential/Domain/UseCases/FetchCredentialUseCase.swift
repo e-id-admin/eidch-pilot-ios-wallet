@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITNetworking
 import BITSdJWT
 import Factory
@@ -20,13 +21,13 @@ struct FetchCredentialUseCase: FetchCredentialUseCaseProtocol {
   init(
     credentialJWTGenerator: CredentialJWTGeneratorProtocol = Container.shared.credentialJWTGenerator(),
     credentialDidJWKGenerator: CredentialDidJWKGeneratorProtocol = Container.shared.credentialDidJWKGenerator(),
-    credentialPrivateKeyGenerator: CredentialPrivateKeyGeneratorProtocol = Container.shared.credentialPrivateKeyGenerator(),
+    credentialKeyPairGenerator: CredentialKeyPairGeneratorProtocol = Container.shared.credentialKeyPairGenerator(),
     credentialJWTValidator: CredentialJWTValidatorProtocol = Container.shared.credentialJWTValidator(),
     repository: CredentialRepositoryProtocol = Container.shared.apiCredentialRepository())
   {
     self.credentialJWTGenerator = credentialJWTGenerator
     self.credentialDidJWKGenerator = credentialDidJWKGenerator
-    self.credentialPrivateKeyGenerator = credentialPrivateKeyGenerator
+    self.credentialKeyPairGenerator = credentialKeyPairGenerator
     self.credentialJWTValidator = credentialJWTValidator
     self.repository = repository
   }
@@ -43,7 +44,7 @@ struct FetchCredentialUseCase: FetchCredentialUseCaseProtocol {
 
     let configuration = try await repository.fetchOpenIdConfiguration(from: issuerUrl)
     let algorithm = try getAlgorithm(from: metadataWrapper)
-    let privateKey = try credentialPrivateKeyGenerator.generate(identifier: metadataWrapper.privateKeyIdentifier, algorithm: algorithm)
+    let privateKey = try credentialKeyPairGenerator.generate(identifier: metadataWrapper.privateKeyIdentifier, algorithm: algorithm)
     let didJwk = try credentialDidJWKGenerator.generate(from: metadataWrapper, privateKey: privateKey)
     let retrievedAccessToken = try await fetchAccessToken(considering: accessToken, tokenEndpoint: configuration.tokenEndpoint, credentialOffer: credentialOffer)
     let jwt = try credentialJWTGenerator.generate(
@@ -70,7 +71,7 @@ struct FetchCredentialUseCase: FetchCredentialUseCaseProtocol {
 
   private let credentialJWTGenerator: CredentialJWTGeneratorProtocol
   private let credentialDidJWKGenerator: CredentialDidJWKGeneratorProtocol
-  private let credentialPrivateKeyGenerator: CredentialPrivateKeyGeneratorProtocol
+  private let credentialKeyPairGenerator: CredentialKeyPairGeneratorProtocol
   private let credentialJWTValidator: CredentialJWTValidatorProtocol
   private let repository: CredentialRepositoryProtocol
 }
@@ -99,7 +100,8 @@ extension FetchCredentialUseCase {
     }
     do {
       return try await repository.fetchAccessToken(from: tokenEndpoint, preAuthorizedCode: credentialOffer.preAuthorizedCode)
-    } catch NetworkError.invalidGrant {
+    } catch {
+      guard let err = error as? NetworkError, err.status == .invalidGrant else { throw error }
       throw FetchCredentialError.expiredInvitation
     }
   }

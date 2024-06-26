@@ -57,7 +57,3 @@ public struct NoDevicePinCodeView: View {
     UIApplication.shared.open(url, options: [:], completionHandler: nil)
   }
 }
-
-#Preview {
-  NoDevicePinCodeView(viewModel: Container.shared.noDevicePinCodeModule(nil).viewModel)
-}

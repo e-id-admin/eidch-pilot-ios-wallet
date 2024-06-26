@@ -1,5 +1,5 @@
 import BITCore
-import BITCredential
+import BITCredentialShared
 import BITSdJWT
 import Foundation
 
@@ -30,7 +30,7 @@ public struct PresentationMetadata: Codable {
           throw PresentationMetadataError.invalidValueType
         }
 
-        fields.append(Field(key: claim.key, value: claim.value, type: valueType, displayName: displayName))
+        fields.append(Field(key: claim.key, value: claim.value, type: valueType, displayName: displayName, order: claim.order, displays: claim.displays))
       }
     }
 
@@ -66,11 +66,13 @@ extension PresentationMetadata {
 
     // MARK: Lifecycle
 
-    public init(key: String, value: String, type: ValueType, displayName: String) {
+    public init(key: String, value: String, type: ValueType, displayName: String, order: Int16, displays: [CredentialClaimDisplay]) {
       self.key = key
       self.value = value
       self.type = type
       self.displayName = displayName
+      self.order = order
+      self.displays = displays
     }
 
     // MARK: Public
@@ -83,6 +85,8 @@ extension PresentationMetadata {
     var value: String
     var type: ValueType
     var displayName: String
+    var order: Int16
+    var displays: [CredentialClaimDisplay]
 
     var imageData: Data? {
       type.isImage ? Data(base64URLEncoded: value) : nil

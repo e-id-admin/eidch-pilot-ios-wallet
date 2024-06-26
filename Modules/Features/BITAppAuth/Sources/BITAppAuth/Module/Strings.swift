@@ -12,26 +12,30 @@ import Foundation
 public enum L10n {
   /// pilotWallet
   public static let appName = L10n.tr("Localizable", "app_name", fallback: "pilotWallet")
-  /// Los
-  public static let biometricSetupActionButton = L10n.tr("Localizable", "biometricSetup_actionButton", fallback: "Los")
+  /// Biometrics
+  public static let biometricSetupBiometricsText = L10n.tr("Localizable", "biometricSetup_biometrics_text", fallback: "Biometrics")
   /// Möchten Sie Biometrics zum Entsperren der pilotWallet aktivieren?
   public static let biometricSetupContent = L10n.tr("Localizable", "biometricSetup_content", fallback: "Möchten Sie Biometrics zum Entsperren der pilotWallet aktivieren?")
-  /// Die pilotWallet ermöglicht es Ihnen, Ihren digitalen Nachweis mit biometrischen Daten zu sichern.
-  public static let biometricSetupDisabledContent = L10n.tr("Localizable", "biometricSetup_disabled_content", fallback: "Die pilotWallet ermöglicht es Ihnen, Ihren digitalen Nachweis mit biometrischen Daten zu sichern.")
+  /// Aktivieren Sie Biometrics, um Ihre digitalen Nachweise sicher zu speichern.
+  public static let biometricSetupDisabledContent = L10n.tr("Localizable", "biometricSetup_disabled_content", fallback: "Aktivieren Sie Biometrics, um Ihre digitalen Nachweise sicher zu speichern.")
   /// Zu den Einstellungen
   public static let biometricSetupDisabledEnableButton = L10n.tr("Localizable", "biometricSetup_disabled_enableButton", fallback: "Zu den Einstellungen")
+  /// Ohne Biometrics weiter
+  public static let biometricSetupDisabledSkipButton = L10n.tr("Localizable", "biometricSetup_disabled_skipButton", fallback: "Ohne Biometrics weiter")
   /// Biometrics deaktiviert
   public static let biometricSetupDisabledTitle = L10n.tr("Localizable", "biometricSetup_disabled_title", fallback: "Biometrics deaktiviert")
   /// Überspringen
   public static let biometricSetupDismissButton = L10n.tr("Localizable", "biometricSetup_dismissButton", fallback: "Überspringen")
   /// FaceID
   public static let biometricSetupFaceidText = L10n.tr("Localizable", "biometricSetup_faceid_text", fallback: "FaceID")
+  /// Die Verwendung biometrischer Daten ist vorübergehend gesperrt. Sie können versuchen, sie zu einem späteren Zeitpunkt zu aktivieren
+  public static let biometricSetupLockoutText = L10n.tr("Localizable", "biometricSetup_lockout_text", fallback: "Die Verwendung biometrischer Daten ist vorübergehend gesperrt. Sie können versuchen, sie zu einem späteren Zeitpunkt zu aktivieren")
   /// Biometrics registrieren
   public static let biometricSetupNoClass3ToSettingsButton = L10n.tr("Localizable", "biometricSetup_noClass3_toSettingsButton", fallback: "Biometrics registrieren")
   /// Sie können weiterhin Ihren Code verwenden, sollte es mit den Biometrics mal nicht klappen.
   public static let biometricSetupReason = L10n.tr("Localizable", "biometricSetup_reason", fallback: "Sie können weiterhin Ihren Code verwenden, sollte es mit den Biometrics mal nicht klappen.")
-  /// Biometrics verwenden
-  public static let biometricSetupTitle = L10n.tr("Localizable", "biometricSetup_title", fallback: "Biometrics verwenden")
+  /// Mit Biometrics entsperren
+  public static let biometricSetupTitle = L10n.tr("Localizable", "biometricSetup_title", fallback: "Mit Biometrics entsperren")
   /// TouchID
   public static let biometricSetupTouchidText = L10n.tr("Localizable", "biometricSetup_touchid_text", fallback: "TouchID")
   /// Los
@@ -102,6 +106,11 @@ public enum L10n {
   public static let storageSetupText = L10n.tr("Localizable", "storageSetup_text", fallback: "pilotWallet einrichten und starten")
   /// pilotWallet einrichten
   public static let storageSetupTitle = L10n.tr("Localizable", "storageSetup_title", fallback: "pilotWallet einrichten")
+
+  /// Mit %s weiter
+  public static func biometricSetupActionButton(_ p1: UnsafePointer<CChar>) -> String {
+    L10n.tr("Localizable", "biometricSetup_actionButton", p1, fallback: "Mit %s weiter")
+  }
 
   /// Sie können es in %s erneut versuchen.
   public static func loginBlockedDescription(_ p1: UnsafePointer<CChar>) -> String {

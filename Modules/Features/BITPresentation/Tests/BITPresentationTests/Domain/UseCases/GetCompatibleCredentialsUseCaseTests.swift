@@ -3,6 +3,8 @@ import XCTest
 
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 @testable import BITPresentation
 @testable import BITPresentationMocks
 @testable import BITTestingCore

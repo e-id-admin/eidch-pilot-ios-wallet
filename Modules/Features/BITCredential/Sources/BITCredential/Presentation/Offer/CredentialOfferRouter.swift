@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITNavigation
 import Factory
 import UIKit

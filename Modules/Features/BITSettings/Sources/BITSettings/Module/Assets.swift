@@ -25,6 +25,8 @@ enum Assets {
   static let impresum = ImageAsset(name: "Impresum")
   static let lizenzen = ImageAsset(name: "Lizenzen")
   static let confederation = ImageAsset(name: "confederation")
+  static let verification = ImageAsset(name: "verification")
+  static let verificationQrCode = ImageAsset(name: "verificationQrCode")
 }
 
 // MARK: - ImageAsset

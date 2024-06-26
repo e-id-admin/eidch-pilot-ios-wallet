@@ -1,44 +1,60 @@
-import BITCore
 import BITTheming
 import SwiftUI
 
-struct OnboardingStepView<Content: View>: View {
+struct OnboardingStepView: View {
 
   // MARK: Lifecycle
 
-  init(primary: String, secondary: String, image: String, onSkip: (() -> Void)? = nil, @ViewBuilder content: () -> Content) {
+  init(primary: String, secondary: String, image: String, pageCount: Int, index: Binding<Int>, onSkip: (() -> Void)? = nil) {
     self.primary = primary
     self.secondary = secondary
     self.image = image
     self.onSkip = onSkip
-    self.content = content()
+    self.pageCount = pageCount
+    _index = index
   }
 
   // MARK: Internal
 
+  @Binding var index: Int
+
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: .x6) {
+    ZStack {
+      ScrollView {
+        VStack(alignment: .center, spacing: .x6) {
+          StepViewHeader(onSkip)
 
-        StepViewHeader(onSkip)
+          Image(image, bundle: .module)
+            .resizable()
+            .scaledToFit()
 
-        Text(primary)
-          .font(.custom.title)
-          .multilineTextAlignment(.leading)
-        Image(image, bundle: .module)
-          .resizable()
-          .scaledToFit()
+          PagerDots(pageCount: pageCount, currentIndex: $index)
 
-        Text(secondary)
-          .font(.custom.body)
-          .multilineTextAlignment(.leading)
+          Text(primary)
+            .font(.custom.title)
+            .multilineTextAlignment(.center)
 
-        content
+          Text(secondary)
+            .font(.custom.body)
+            .multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, .x5)
+      }
 
+      VStack {
         Spacer()
+
+        Button(action: {
+          index += 1
+        }, label: {
+          Label(L10n.onboardingContinue, systemImage: "arrow.right")
+            .frame(maxWidth: .infinity)
+        })
+        .buttonStyle(.primaryProminent)
+        .labelStyle(.titleAndIconReversed)
+        .padding([.horizontal, .bottom], .x4)
       }
     }
-    .padding(.horizontal, .x5)
   }
 
   // MARK: Private
@@ -47,6 +63,5 @@ struct OnboardingStepView<Content: View>: View {
   private var secondary: String
   private var image: String
   private var onSkip: (() -> Void)?
-  private var content: Content
-
+  private var pageCount: Int
 }

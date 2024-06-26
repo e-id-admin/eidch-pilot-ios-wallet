@@ -1,0 +1,16 @@
+xcassets:
+  inputs:
+    - Sources/BITSecurity/Resources/Assets.xcassets
+  outputs:
+    - templateName: swift5
+      output: Sources/BITSecurity/Module/Assets.swift
+      params:
+        enumName: Assets
+
+strings:
+  inputs: Sources/BITSecurity/Resources/de.lproj
+  outputs:
+    - templateName: structured-swift5
+      output: Sources/BITSecurity/Module/Strings.swift
+      params:
+        publicAccess: true

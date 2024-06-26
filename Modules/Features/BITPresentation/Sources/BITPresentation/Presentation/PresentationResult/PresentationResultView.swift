@@ -38,7 +38,7 @@ public struct PresentationResultView: View {
             .padding(.top, .x10)
 
           VStack(spacing: 0) {
-            Text(viewModel.date)
+            Text(viewModel.formattedDate)
               .font(.custom.subheadline)
             Text(L10n.presentationResultTitle)
               .tracking(-0.5)
@@ -51,7 +51,9 @@ public struct PresentationResultView: View {
             .background(ThemingAssets.background.swiftUIColor)
             .foregroundColor(Color.primary)
             .clipShape(.rect(cornerRadius: 4))
+            .padding(.bottom, 68)
         }
+        .padding(.x4)
       }
 
       Button(action: {
@@ -62,9 +64,9 @@ public struct PresentationResultView: View {
           .labelStyle(.titleAndIconReversed)
       })
       .buttonStyle(.primaryProminentReversed)
-      .padding(.bottom, .x4)
+      .padding(.x4)
+      .background(ThemingAssets.green.swiftUIColor.ignoresSafeArea(edges: .bottom))
     }
-    .padding(.horizontal, .x4)
     .foregroundColor(.white)
     .background(
       LinearGradient(gradient: Gradient(colors: [ThemingAssets.green2.swiftUIColor, ThemingAssets.green.swiftUIColor]), startPoint: .top, endPoint: .bottom).ignoresSafeArea()

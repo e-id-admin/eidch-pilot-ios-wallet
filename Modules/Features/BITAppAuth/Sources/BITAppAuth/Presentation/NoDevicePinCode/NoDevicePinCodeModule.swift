@@ -8,10 +8,9 @@ public class NoDevicePinCodeModule {
 
   // MARK: Lifecycle
 
-  public init(onComplete: (() -> Void)?, router: NoDevicePinCodeRouter = Container.shared.noDevicePinRouter()) {
+  public init(router: NoDevicePinCodeRouter = Container.shared.noDevicePinRouter()) {
     let router = router
     let viewModel = Container.shared.noDevicePinCodeViewModel(router)
-    viewModel.onComplete = onComplete
     let view = NoDevicePinCodeView(viewModel: viewModel)
       .environment(\.font, .custom.body)
       .preferredColorScheme(.light)
@@ -26,10 +25,9 @@ public class NoDevicePinCodeModule {
   // MARK: Public
 
   public let viewController: UIViewController
+  public let viewModel: NoDevicePinCodeViewModel
 
   // MARK: Internal
 
   let router: NoDevicePinCodeRouter
-  let viewModel: NoDevicePinCodeViewModel
-
 }

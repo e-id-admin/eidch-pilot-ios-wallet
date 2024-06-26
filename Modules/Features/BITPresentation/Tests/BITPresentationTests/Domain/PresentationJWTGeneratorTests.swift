@@ -1,6 +1,10 @@
 import BITCredential
 import XCTest
+
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
+@testable import BITLocalAuthentication
 @testable import BITPresentation
 @testable import BITPresentationMocks
 @testable import BITSdJWT
@@ -13,22 +17,23 @@ final class PresentationJWTGeneratorTests: XCTestCase {
   // MARK: Internal
 
   override func setUp() {
-    spyVault = VaultProtocolSpy()
+    keyManagerProtocolSpy = KeyManagerProtocolSpy()
     spyJwtManager = JWTManageableSpy()
 
-    spyVault.getPrivateKeyWithIdentifierAlgorithmContextReasonReturnValue = mockPrivateKey
-    spyVault.getPublicKeyForReturnValue = mockPublickKey
+    keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryReturnValue = mockPrivateKey
+    keyManagerProtocolSpy.getPublicKeyForReturnValue = mockPublickKey
     spyJwtManager.createJWKFromReturnValue = mockJwk
     spyJwtManager.createJWTPayloadDataAlgorithmDidPrivateKeyReturnValue = mockJwt
+    context.localizedReason = mockReason
 
-    generator = PresentationJWTGenerator(vault: spyVault, jwtManager: spyJwtManager)
+    generator = PresentationJWTGenerator(keyManager: keyManagerProtocolSpy, jwtManager: spyJwtManager, context: context)
   }
 
   func testGenerate_oneClaimRequested() throws {
     let mockRequestObject: RequestObject = .Mock.sample
     let mockRawCredential: RawCredential = .Mock.sample
     let requestedClaims: [PresentationMetadata.Field] = [
-      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname"),
+      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname", order: 1, displays: []),
     ]
     let mockPresentationMetadata = PresentationMetadata(
       attributes: requestedClaims,
@@ -43,11 +48,7 @@ final class PresentationJWTGeneratorTests: XCTestCase {
   func testGenerate_severalClaimsRequested() throws {
     let mockRequestObject: RequestObject = .Mock.sample
     let mockRawCredential: RawCredential = .Mock.sample
-    let requestedClaims: [PresentationMetadata.Field] = [
-      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname"),
-      PresentationMetadata.Field(key: "lastName", value: "value", type: .string, displayName: "Lastname"),
-      PresentationMetadata.Field(key: "dateOfBirth", value: "value", type: .string, displayName: "Date of birth"),
-    ]
+    let requestedClaims: [PresentationMetadata.Field] = PresentationMetadata.Field.Mock.array
     let mockPresentationMetadata = PresentationMetadata(
       attributes: requestedClaims,
       verifier: RequestObject.Mock.sample.clientMetadata)
@@ -62,8 +63,8 @@ final class PresentationJWTGeneratorTests: XCTestCase {
     let mockRequestObject: RequestObject = .Mock.sample
     let mockRawCredential: RawCredential = .Mock.sample
     let requestedClaims: [PresentationMetadata.Field] = [
-      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname"),
-      PresentationMetadata.Field(key: "special-claim", value: "value", type: .string, displayName: "SpecialClaim"),
+      PresentationMetadata.Field(key: "firstName", value: "value", type: .string, displayName: "Firstname", order: 1, displays: []),
+      PresentationMetadata.Field(key: "special-claim", value: "value", type: .string, displayName: "SpecialClaim", order: 1, displays: []),
     ]
     let mockPresentationMetadata = PresentationMetadata(
       attributes: requestedClaims,
@@ -72,8 +73,8 @@ final class PresentationJWTGeneratorTests: XCTestCase {
     do {
       _ = try generator.generate(requestObject: mockRequestObject, rawCredential: mockRawCredential, presentationMetadata: mockPresentationMetadata)
     } catch PresentationJWTGeneratorError.claimsMismatch {
-      XCTAssertFalse(spyVault.getPrivateKeyWithIdentifierAlgorithmContextReasonCalled)
-      XCTAssertFalse(spyVault.getPublicKeyForCalled)
+      XCTAssertFalse(keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryCalled)
+      XCTAssertFalse(keyManagerProtocolSpy.getPublicKeyForCalled)
       XCTAssertFalse(spyJwtManager.createJWKFromCalled)
       XCTAssertFalse(spyJwtManager.createJWTPayloadDataAlgorithmDidPrivateKeyCalled)
     } catch {
@@ -87,22 +88,25 @@ final class PresentationJWTGeneratorTests: XCTestCase {
   private let mockPublickKey: SecKey = SecKeyTestsHelper.createPrivateKey()
   private let mockJwk: JWK = "mock-jwk"
   private let mockJwt: JWT = .Mock.sample
+  private let mockReason = "mockReason"
 
   // swiftlint:disable all
-  private var spyVault: VaultProtocolSpy!
+  private var keyManagerProtocolSpy: KeyManagerProtocolSpy!
   private var spyJwtManager: JWTManageableSpy!
   private var generator: PresentationJWTGenerator!
+  private var context = LAContextProtocolSpy()
 
   // swiftlint:enable all
 
   private func assertGenerate(withRequestedClaims requestedClaims: [PresentationMetadata.Field]) throws {
-    XCTAssertTrue(spyVault.getPrivateKeyWithIdentifierAlgorithmContextReasonCalled)
-    XCTAssertTrue(spyVault.getPublicKeyForCalled)
+    XCTAssertTrue(keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryCalled)
+    XCTAssertTrue(keyManagerProtocolSpy.getPublicKeyForCalled)
     XCTAssertTrue(spyJwtManager.createJWKFromCalled)
     XCTAssertEqual(spyJwtManager.createJWKFromReceivedPublicKey, mockPublickKey)
     XCTAssertTrue(spyJwtManager.createJWTPayloadDataAlgorithmDidPrivateKeyCalled)
     XCTAssertEqual(spyJwtManager.createJWTPayloadDataAlgorithmDidPrivateKeyReceivedArguments?.did, "did:jwk:\(mockJwk)")
     XCTAssertEqual(spyJwtManager.createJWTPayloadDataAlgorithmDidPrivateKeyReceivedArguments?.privateKey, mockPrivateKey)
+    XCTAssertEqual((keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryReceivedArguments?.query?[kSecUseAuthenticationContext as String] as? LAContextProtocolSpy)?.localizedReason, mockReason) // Compare reason cause cannot compare LAContextProtocol
 
     guard let vpJWTData = spyJwtManager.createJWTPayloadDataAlgorithmDidPrivateKeyReceivedArguments?.payloadData else {
       XCTFail("no vpJWTData sent to the jwtManager")

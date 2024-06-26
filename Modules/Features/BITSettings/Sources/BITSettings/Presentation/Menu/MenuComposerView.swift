@@ -26,6 +26,7 @@ public struct MenuComposerView: View {
   @State private var isImpressumPresented = false
   @State private var isDatenschutzPresented = false
   @State private var isLicensesPresented = false
+  @State private var isVerificationInstructionPresented = false
 
   private var content: some View {
     ScrollView {
@@ -33,6 +34,10 @@ public struct MenuComposerView: View {
         MenuSection {
           MenuCell(systemImage: "lock", text: L10n.settingsSecurity, disclosureIndicator: .navigation) {
             isDatenschutzPresented.toggle()
+          }
+
+          MenuCell(systemImage: "magnifyingglass", text: L10n.settingsGetVerified, disclosureIndicator: .navigation) {
+            isVerificationInstructionPresented.toggle()
           }
           .hasDivider(false)
         }
@@ -69,6 +74,10 @@ public struct MenuComposerView: View {
       }
 
       NavigationLink(destination: LicencesListView(), isActive: $isLicensesPresented) {
+        EmptyView()
+      }
+
+      NavigationLink(destination: VerificationInstructionView(), isActive: $isVerificationInstructionPresented) {
         EmptyView()
       }
     }

@@ -16,8 +16,9 @@ final class LockWalletUseCaseTests: XCTestCase {
   override func setUp() {
     super.setUp()
     processInfoService = ProcessInfoServiceProtocolSpy()
-    vault = VaultProtocolSpy()
-    let repository = SecretsRepository(vault: vault, processInfoService: processInfoService)
+    keyManagerProtocolSpy = KeyManagerProtocolSpy()
+    spySecretManager = SecretManagerProtocolSpy()
+    let repository = SecretsRepository(keyManager: keyManagerProtocolSpy, secretManager: spySecretManager, processInfoService: processInfoService)
     useCase = LockWalletUseCase(repository: repository)
   }
 
@@ -25,13 +26,13 @@ final class LockWalletUseCaseTests: XCTestCase {
     processInfoService.systemUptime = timeInterval
     try useCase.execute()
 
-    vault.saveSecretForKeyClosure = { value, _ in
+    spySecretManager.setForKeyQueryClosure = { value, _, _ in
       guard let value = value as? TimeInterval else { return XCTFail("Expected a TimeInterval...") }
       XCTAssertEqual(value, self.timeInterval)
     }
 
-    XCTAssertTrue(vault.saveSecretForKeyCalled)
-    XCTAssertEqual(vault.saveSecretForKeyCallsCount, 1)
+    XCTAssertTrue(spySecretManager.setForKeyQueryCalled)
+    XCTAssertEqual(spySecretManager.setForKeyQueryCallsCount, 1)
   }
 
   // MARK: Private
@@ -40,8 +41,9 @@ final class LockWalletUseCaseTests: XCTestCase {
 
   // swiftlint:disable all
   private var useCase: LockWalletUseCase!
+  private var spySecretManager: SecretManagerProtocolSpy!
   private var processInfoService: ProcessInfoServiceProtocolSpy!
-  private var vault: VaultProtocolSpy!
+  private var keyManagerProtocolSpy: KeyManagerProtocolSpy!
   // swiftlint:enable all
 
 }

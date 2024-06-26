@@ -1,4 +1,6 @@
+import BITActivity
 import BITCore
+import BITCredentialShared
 import BITTheming
 import SwiftUI
 
@@ -9,7 +11,13 @@ public struct CredentialTinyCard: View {
   // MARK: Lifecycle
 
   public init(_ credential: Credential) {
+    credentialStatus = credential.status
     self.credential = credential
+  }
+
+  public init(from activity: Activity) {
+    credentialStatus = activity.credentialSnapshotStatus
+    credential = activity.credential
   }
 
   // MARK: Public
@@ -45,7 +53,7 @@ public struct CredentialTinyCard: View {
 
               Spacer()
 
-              CredentialStatusBadge(status: credential.status)
+              CredentialStatusBadge(status: credentialStatus)
             }
           }
           .foregroundColor(Color(hex: credential.preferredDisplay?.textColor ?? Color.white.hexString()) ?? .white)
@@ -92,5 +100,6 @@ public struct CredentialTinyCard: View {
   // MARK: Private
 
   private var credential: Credential
+  private var credentialStatus: CredentialStatus
 
 }

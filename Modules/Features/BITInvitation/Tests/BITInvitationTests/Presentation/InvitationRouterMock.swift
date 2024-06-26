@@ -1,4 +1,4 @@
-import BITCredential
+import BITCredentialShared
 import BITInvitation
 import Foundation
 
@@ -36,8 +36,9 @@ class InvitationRouterMock: InvitationRouter.Routes {
     didCallPopToRoot = true
   }
 
-  func deeplink(url: URL, animated: Bool) {
+  func deeplink(url: URL, animated: Bool) -> Bool {
     didCallDeeplink = true
+    return true
   }
 
 }

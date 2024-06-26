@@ -1,14 +1,19 @@
+import BITCredentialShared
 import BITSdJWT
 import Factory
-import Foundation
 import Sextant
-import Spyable
 
 // MARK: - SaveCredentialUseCase
 
 struct SaveCredentialUseCase: SaveCredentialUseCaseProtocol {
 
-  let credentialRepository: CredentialRepositoryProtocol = Container.shared.databaseCredentialRepository()
+  // MARK: Lifecycle
+
+  init(credentialRepository: CredentialRepositoryProtocol = Container.shared.databaseCredentialRepository()) {
+    self.credentialRepository = credentialRepository
+  }
+
+  // MARK: Internal
 
   func execute(sdJWT: SdJWT, metadataWrapper: CredentialMetadataWrapper) async throws -> Credential {
     guard let sdJWTRawData = sdJWT.raw.data(using: .utf8) else { throw SaveCredentialError.rawSdJWTNotFound }
@@ -21,6 +26,10 @@ struct SaveCredentialUseCase: SaveCredentialUseCaseProtocol {
 
     return try await credentialRepository.create(credential: credential)
   }
+
+  // MARK: Private
+
+  private let credentialRepository: CredentialRepositoryProtocol
 
 }
 

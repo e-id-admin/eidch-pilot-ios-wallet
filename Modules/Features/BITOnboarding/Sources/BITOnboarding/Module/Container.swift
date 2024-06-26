@@ -1,3 +1,4 @@
+import BITSettings
 import Factory
 
 @MainActor
@@ -5,8 +6,8 @@ extension Container {
 
   // MARK: Public
 
-  public var onboardingFlowModule: ParameterFactory<(() -> Void)?, OnboardingFlowModule> {
-    self { OnboardingFlowModule(onComplete: $0) }
+  public var onboardingFlowModule: Factory<OnboardingFlowModule> {
+    self { OnboardingFlowModule() }
   }
 
   // MARK: Internal
@@ -34,5 +35,4 @@ extension Container {
   var onboardingSuccessUseCase: Factory<OnboardingSuccessUseCaseProtocol> {
     self { OnboardingSuccessUseCase() }
   }
-
 }

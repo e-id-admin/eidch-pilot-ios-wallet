@@ -68,7 +68,7 @@ public struct PresentationCredentialListView: View {
           Label(L10n.globalBackHome, systemImage: "arrow.left")
             .frame(maxWidth: .infinity)
         })
-        .buttonStyle(.secondaryProminant)
+        .buttonStyle(.secondary)
       }
       .background(ThemingAssets.background.swiftUIColor.ignoresSafeArea())
       .readSize { size in

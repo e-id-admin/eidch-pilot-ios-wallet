@@ -2,7 +2,7 @@ import SwiftUI
 
 public enum KeyPadKey: String, Identifiable {
   case none, zero, one, two, three, four, five, six,
-       seven, eight, nine, delete, faceId, back
+       seven, eight, nine, delete, faceId, cancel
 
   // MARK: Public
 
@@ -22,7 +22,7 @@ public enum KeyPadKey: String, Identifiable {
     case .delete,
          .faceId:
       nil
-    case .back: L10n.globalBack
+    case .cancel: L10n.globalCancel
     }
   }
 
@@ -30,6 +30,13 @@ public enum KeyPadKey: String, Identifiable {
     switch self {
     case .faceId: Image(systemName: "faceid")
     case .delete: Image(systemName: "delete.backward")
+    default: nil
+    }
+  }
+
+  public var font: SwiftUI.Font? {
+    switch self {
+    case .cancel: .body
     default: nil
     }
   }

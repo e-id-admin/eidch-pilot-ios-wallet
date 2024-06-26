@@ -27,4 +27,15 @@ struct SecKeyTestsHelper {
     return publicKey
   }
 
+  static func createAccessControl(accessControlFlags: SecAccessControlCreateFlags, protection: CFString) -> SecAccessControl {
+    var accessControlError: Unmanaged<CFError>?
+    guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, protection, accessControlFlags, &accessControlError) else {
+      if let error = accessControlError?.takeRetainedValue() {
+        fatalError("Access control creation failed with error: \(error)")
+      } else {
+        fatalError("Unknown error during access control creation.")
+      }
+    }
+    return accessControl
+  }
 }

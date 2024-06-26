@@ -3,8 +3,11 @@ import BITSdJWT
 import Factory
 import Spyable
 import XCTest
+
 @testable import BITCredential
 @testable import BITCredentialMocks
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 
 @MainActor
 final class CredentialOfferViewModelTests: XCTestCase {

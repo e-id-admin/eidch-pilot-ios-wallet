@@ -8,3 +8,5 @@
 "home_empty_view_no_credentials_qr_code_text" = "Ich habe keine SMS oder QR-Code erhalten.";
 "home_empty_view_no_credentials_scan_link" = "https://forms.eid.admin.ch/elfa";
 "home_empty_view_had_credentials_text" = "Ihre Wallet ist leer. Bitte wenden Sie sich an das Strassenverkehrsamt Appenzell Ausserrhoden.";
+"home_last_activity_header_text" = "LETZTE AKTIVITÄT";
+"home_last_activity_header_button" = "Alle anzeigen";

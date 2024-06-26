@@ -16,9 +16,11 @@ public struct PrivacyView: View {
   // MARK: Public
 
   public var body: some View {
-    content()
-      .font(.custom.body)
-      .navigationTitle(L10n.securitySettingsTitle)
+    ZStack {
+      content()
+        .font(.custom.body)
+        .navigationTitle(L10n.securitySettingsTitle)
+    }
   }
 
   // MARK: Internal
@@ -35,7 +37,6 @@ public struct PrivacyView: View {
           MenuCell(text: L10n.securitySettingsChangePin, disclosureIndicator: .navigation) {
             viewModel.presentPinChangeFlow()
           }
-          .hasDivider(true)
 
           ToggleMenuCell(text: L10n.securitySettingsBiometrics, isOn: $viewModel.isBiometricEnabled) {
             viewModel.presentBiometricChangeFlow()
@@ -52,6 +53,19 @@ public struct PrivacyView: View {
           MenuCell(text: L10n.securitySettingsDataProtection, disclosureIndicator: .externalLink, {
             openLink(L10n.securitySettingsDataProtectionLink)
           })
+
+          ToggleMenuCell(text: L10n.securitySettingsShareAnalysis, subtitle: L10n.securitySettingsShareAnalysisText, isOn: $viewModel.isAnalyticsEnabled, isLoading: $viewModel.isLoading) {
+            Task {
+              await viewModel.updateAnalyticsStatus()
+            }
+          }
+          .onAppear {
+            viewModel.fetchAnalyticsStatus()
+          }
+
+          MenuCell(text: L10n.securitySettingsDataAnalysis, disclosureIndicator: .navigation) {
+            viewModel.presentInformationView()
+          }
           .hasDivider(false)
         }, header: {
           MenuHeader(image: "chart.pie", text: L10n.securitySettingsAnalysisTitle)
@@ -62,6 +76,10 @@ public struct PrivacyView: View {
         }
 
         NavigationLink(destination: BiometricChangeFlowView(isPresented: $viewModel.isBiometricChangeFlowPresented, isBiometricEnabled: viewModel.isBiometricEnabled), isActive: $viewModel.isBiometricChangeFlowPresented) {
+          EmptyView()
+        }
+
+        NavigationLink(destination: DataInformationView(), isActive: $viewModel.isInformationPresented) {
           EmptyView()
         }
       }
@@ -75,8 +93,4 @@ public struct PrivacyView: View {
     guard let url = URL(string: link) else { return }
     UIApplication.shared.open(url)
   }
-}
-
-#Preview {
-  PrivacyView()
 }

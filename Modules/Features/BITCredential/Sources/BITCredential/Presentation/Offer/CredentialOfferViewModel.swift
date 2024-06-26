@@ -1,4 +1,5 @@
 import BITCore
+import BITCredentialShared
 import Combine
 import Factory
 import Foundation

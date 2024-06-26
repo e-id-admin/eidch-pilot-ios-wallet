@@ -5,34 +5,51 @@ struct ToggleMenuCell: View {
 
   // MARK: Lifecycle
 
-  init(text: String, isOn: Binding<Bool>, _ onTap: (() -> Void)? = nil) {
-    self.text = Text(text)
+  init(text: String, subtitle: String? = nil, isOn: Binding<Bool>, isLoading: Binding<Bool> = .constant(false), _ onTap: (() -> Void)? = nil) {
+    self.text = text
+    self.subtitle = subtitle
     self.onTap = onTap
     _isOn = isOn
+    _isLoading = isLoading
   }
 
   // MARK: Internal
 
   @Binding var isOn: Bool
+  @Binding var isLoading: Bool
 
   var body: some View {
     VStack(alignment: .leading) {
-      HStack(alignment: .firstTextBaseline, spacing: .x4) {
-        HStack(alignment: .firstTextBaseline) {
-          text
+      VStack(alignment: .leading) {
+        HStack(alignment: .firstTextBaseline, spacing: .x4) {
+          Text(text)
 
           Spacer(minLength: .x2)
 
-          Toggle("", isOn: $isOn)
-            .tint(ThemingAssets.accentColor.swiftUIColor)
-            .offset(y: -20)
-            .onTapGesture {
-              onTap?()
-            }
-            .simultaneousGesture(
-              LongPressGesture()
-                .onEnded { _ in onTap?() }
-            )
+          HStack(spacing: .x2) {
+            ProgressView()
+              .opacity(isLoading ? 1 : 0)
+
+            Toggle("", isOn: $isOn)
+              .tint(ThemingAssets.accentColor.swiftUIColor)
+              .labelsHidden()
+              .disabled(isLoading)
+              .onTapGesture {
+                onTap?()
+              }
+              .simultaneousGesture(
+                LongPressGesture()
+                  .onEnded { _ in onTap?() }
+              )
+          }
+          .offset(y: -20)
+        }
+
+        if let subtitle {
+          Text(subtitle)
+            .font(.custom.footnote2)
+            .foregroundStyle(ThemingAssets.secondary.swiftUIColor)
+            .padding(.bottom, .x2)
         }
       }
 
@@ -54,10 +71,7 @@ struct ToggleMenuCell: View {
   // MARK: Private
 
   @Environment(\.menuCellDivider) private var hasDivider: Bool
-  private var text: Text
+  private var text: String
+  private var subtitle: String? = nil
   private var onTap: (() -> Void)?
-}
-
-#Preview {
-  ToggleMenuCell(text: "Menu cell", isOn: .constant(true))
 }

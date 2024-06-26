@@ -1,6 +1,9 @@
 import AVFoundation
+import BITActivity
+import BITAnalytics
 import BITCore
 import BITCredential
+import BITCredentialShared
 import BITNetworking
 import BITPresentation
 import Combine
@@ -14,34 +17,35 @@ public class InvitationViewModel: StateMachine<InvitationViewModel.State, Invita
 
   // MARK: Lifecycle
 
-  private init(_ initialState: State, useCases: UseCases = UseCases()) {
+  private init(_ initialState: State, useCases: UseCases = UseCases(), analytics: AnalyticsProtocol = Container.shared.analytics()) {
     self.useCases = useCases
+    self.analytics = analytics
     super.init(initialState)
   }
 
-  public convenience init(useCases: UseCases = UseCases()) {
-    self.init(AVCaptureDevice.authorizationStatus(for: .video) == .authorized ? .qrScanner : .permission, useCases: useCases)
+  public convenience init(useCases: UseCases = UseCases(), analytics: AnalyticsProtocol = Container.shared.analytics()) {
+    self.init(AVCaptureDevice.authorizationStatus(for: .video) == .authorized ? .qrScanner : .permission, useCases: useCases, analytics: analytics)
   }
 
-  public convenience init(_ url: URL, useCases: UseCases = UseCases()) {
-    self.init(.loading, useCases: useCases)
+  public convenience init(_ url: URL, useCases: UseCases = UseCases(), analytics: AnalyticsProtocol = Container.shared.analytics()) {
+    self.init(.loading, useCases: useCases, analytics: analytics)
 
     Task {
       await send(event: .setMetadataUrl(url))
     }
   }
 
-  private convenience init(_ initialState: State, routes: InvitationRouter.Routes, useCases: UseCases = .init()) {
-    self.init(initialState, useCases: useCases)
+  private convenience init(_ initialState: State, routes: InvitationRouter.Routes, useCases: UseCases = .init(), analytics: AnalyticsProtocol = Container.shared.analytics()) {
+    self.init(initialState, useCases: useCases, analytics: analytics)
     self.routes = routes
   }
 
-  public convenience init(routes: InvitationRouter.Routes, useCases: UseCases = .init()) {
-    self.init(AVCaptureDevice.authorizationStatus(for: .video) == .authorized ? .qrScanner : .permission, routes: routes, useCases: useCases)
+  public convenience init(routes: InvitationRouter.Routes, useCases: UseCases = .init(), analytics: AnalyticsProtocol = Container.shared.analytics()) {
+    self.init(AVCaptureDevice.authorizationStatus(for: .video) == .authorized ? .qrScanner : .permission, routes: routes, useCases: useCases, analytics: analytics)
   }
 
-  public convenience init(_ url: URL, routes: InvitationRouter.Routes, useCases: UseCases = .init()) {
-    self.init(.loading, routes: routes, useCases: useCases)
+  public convenience init(_ url: URL, routes: InvitationRouter.Routes, useCases: UseCases = .init(), analytics: AnalyticsProtocol = Container.shared.analytics()) {
+    self.init(.loading, routes: routes, useCases: useCases, analytics: analytics)
 
     Task {
       await send(event: .setMetadataUrl(url))
@@ -195,6 +199,8 @@ public class InvitationViewModel: StateMachine<InvitationViewModel.State, Invita
   private var useCases: UseCases
   private var invitationURL: URL?
 
+  private let analytics: AnalyticsProtocol
+
 }
 
 extension InvitationViewModel {
@@ -203,10 +209,18 @@ extension InvitationViewModel {
     isLoading = false
     stateError = error
 
-    if error as? NetworkError == .pinning {
-      isTorchEnabled = false
-      invitationURL = nil
-      state = processPresentation ? .wrongVerifier : .wrongIssuer
+    analytics.log(error)
+
+    if let error = error as? NetworkError {
+      switch error.status {
+      case .pinning:
+        isTorchEnabled = false
+        invitationURL = nil
+        state = processPresentation ? .wrongVerifier : .wrongIssuer
+      case .noConnection:
+        state = .noInternetConnexion
+      default: break
+      }
     } else if error as? FetchCredentialError == .expiredInvitation {
       isTorchEnabled = false
       invitationURL = nil
@@ -228,8 +242,6 @@ extension InvitationViewModel {
       isTorchEnabled = false
       invitationURL = nil
       state = .noCompatibleCredentials
-    } else if error as? NetworkError == .noConnection {
-      state = .noInternetConnexion
     } else {
       isPopupErrorPresented = true
       invitationURL = nil
@@ -248,6 +260,11 @@ extension InvitationViewModel {
     processCredentialOffer = true
     let credentialOffer = try useCases.validateCredentialOfferInvitationUrlUseCase.execute(url)
     credential = try await fetchAndSaveCredential(from: credentialOffer)
+
+    if let credential {
+      try? await useCases.addActivityUseCase.execute(type: .credentialReceived, credential: credential)
+    }
+
     isLoading = false
     isTorchEnabled = false
 
@@ -311,7 +328,6 @@ extension InvitationViewModel {
       return credential
     }
   }
-
 }
 
 // MARK: InvitationViewModel.UseCases
@@ -329,7 +345,8 @@ extension InvitationViewModel {
       fetchMetadataUseCase: FetchMetadataUseCaseProtocol = Container.shared.fetchMetadataUseCase(),
       fetchCredentialUseCase: FetchCredentialUseCaseProtocol = Container.shared.fetchCredentialUseCase(),
       saveCredentialUseCase: SaveCredentialUseCaseProtocol = Container.shared.saveCredentialUseCase(),
-      checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol = Container.shared.checkAndUpdateCredentialStatusUseCase())
+      checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol = Container.shared.checkAndUpdateCredentialStatusUseCase(),
+      addActivityUseCase: AddActivityToCredentialUseCaseProtocol = Container.shared.addActivityUseCase())
     {
       self.validateCredentialOfferInvitationUrlUseCase = validateCredentialOfferInvitationUrlUseCase
       self.fetchRequestObjectUseCase = fetchRequestObjectUseCase
@@ -339,6 +356,7 @@ extension InvitationViewModel {
       self.fetchCredentialUseCase = fetchCredentialUseCase
       self.saveCredentialUseCase = saveCredentialUseCase
       self.checkAndUpdateCredentialStatusUseCase = checkAndUpdateCredentialStatusUseCase
+      self.addActivityUseCase = addActivityUseCase
     }
 
     // MARK: Public
@@ -351,6 +369,7 @@ extension InvitationViewModel {
     public var fetchCredentialUseCase: FetchCredentialUseCaseProtocol
     public var saveCredentialUseCase: SaveCredentialUseCaseProtocol
     public var checkAndUpdateCredentialStatusUseCase: CheckAndUpdateCredentialStatusUseCaseProtocol
+    public var addActivityUseCase: AddActivityToCredentialUseCaseProtocol
 
   }
 }

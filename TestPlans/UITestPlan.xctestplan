@@ -12,7 +12,13 @@
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:pilotWallet.xcodeproj",
+        "identifier" : "FA258C3E84C96A43FF37CAB6",
+        "name" : "pilotWalletUITests"
+      }
+    }
   ],
   "version" : 1
 }

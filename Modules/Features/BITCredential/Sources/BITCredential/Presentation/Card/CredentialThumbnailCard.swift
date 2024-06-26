@@ -1,4 +1,5 @@
 import BITCore
+import BITCredentialShared
 import BITTheming
 import SwiftUI
 

@@ -6,28 +6,28 @@ struct LoginRepository: LoginRepositoryProtocol {
 
   // MARK: Lifecycle
 
-  init(vault: VaultProtocol = Container.shared.vault()) {
-    self.vault = vault
+  init(secretManager: SecretManagerProtocol = Container.shared.secretManager()) {
+    self.secretManager = secretManager
   }
 
   // MARK: Internal
 
   @discardableResult
   func registerAttempt(_ number: Int, kind: AuthMethod) throws -> Int {
-    try vault.saveSecret(number, forKey: kind.attemptKey)
+    try secretManager.set(number, forKey: kind.attemptKey)
     return number
   }
 
   func getAttempts(kind: AuthMethod) throws -> Int {
-    vault.int(forKey: kind.attemptKey) ?? 0
+    secretManager.integer(forKey: kind.attemptKey) ?? 0
   }
 
   func resetAttempts(kind: AuthMethod) throws {
-    try vault.saveSecret(nil, forKey: kind.attemptKey)
+    try secretManager.removeObject(forKey: kind.attemptKey)
   }
 
   // MARK: Private
 
-  private let vault: VaultProtocol
+  private let secretManager: SecretManagerProtocol
 
 }

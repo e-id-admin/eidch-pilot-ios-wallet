@@ -18,58 +18,60 @@ final class PepperRepositoryTests: XCTestCase {
   override func setUp() {
     super.setUp()
     spyContext = LAContextProtocolSpy()
-    spyVault = VaultProtocolSpy()
-    repository = SecretsRepository(vault: spyVault)
+    keyManagerProtocolSpy = KeyManagerProtocolSpy()
+    secretManagerProtocolSpy = SecretManagerProtocolSpy()
+    repository = SecretsRepository(keyManager: keyManagerProtocolSpy, secretManager: secretManagerProtocolSpy)
   }
 
   func testCreatePepperKey() throws {
     let mockSecKey: SecKey = SecKeyTestsHelper.createPrivateKey()
-    spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonReturnValue = mockSecKey
+    keyManagerProtocolSpy.generateKeyPairWithIdentifierAlgorithmOptionsQueryReturnValue = mockSecKey
     let secKey = try repository.createPepperKey()
     XCTAssertEqual(mockSecKey, secKey)
-    XCTAssertTrue(spyVault.deletePrivateKeyWithIdentifierAlgorithmCalled)
-    XCTAssertEqual(vaultAlgorithm, spyVault.deletePrivateKeyWithIdentifierAlgorithmReceivedArguments?.algorithm)
-    XCTAssertTrue(spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonCalled)
-    XCTAssertEqual(vaultAlgorithm, spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonReceivedArguments?.algorithm)
-    XCTAssertEqual([.privateKeyUsage], spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonReceivedArguments?.accessControlFlags)
-    XCTAssertEqual(kSecAttrAccessibleWhenUnlockedThisDeviceOnly, spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonReceivedArguments?.protection)
-    XCTAssertEqual([.secureEnclavePermanently], spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonReceivedArguments?.options)
-    XCTAssertEqual(spyVault.deletePrivateKeyWithIdentifierAlgorithmReceivedArguments?.identifier, spyVault.generatePrivateKeyWithIdentifierAlgorithmAccessControlFlagsProtectionOptionsContextReasonReceivedArguments?.identifier)
+    XCTAssertTrue(keyManagerProtocolSpy.deleteKeyPairWithIdentifierAlgorithmCalled)
+    XCTAssertEqual(vaultAlgorithm, keyManagerProtocolSpy.deleteKeyPairWithIdentifierAlgorithmReceivedArguments?.algorithm)
+    XCTAssertTrue(keyManagerProtocolSpy.generateKeyPairWithIdentifierAlgorithmOptionsQueryCalled)
+    XCTAssertEqual(vaultAlgorithm, keyManagerProtocolSpy.generateKeyPairWithIdentifierAlgorithmOptionsQueryReceivedArguments?.algorithm)
+    XCTAssertEqual([.secureEnclavePermanently], keyManagerProtocolSpy.generateKeyPairWithIdentifierAlgorithmOptionsQueryReceivedArguments?.options)
+    XCTAssertEqual(keyManagerProtocolSpy.deleteKeyPairWithIdentifierAlgorithmReceivedArguments?.identifier, keyManagerProtocolSpy.generateKeyPairWithIdentifierAlgorithmOptionsQueryReceivedArguments?.identifier)
   }
 
   func testGetPepperKey() throws {
     let mockSecKey: SecKey = SecKeyTestsHelper.createPrivateKey()
-    spyVault.getPrivateKeyWithIdentifierAlgorithmContextReasonReturnValue = mockSecKey
+    keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryReturnValue = mockSecKey
     let secKey = try repository.getPepperKey()
     XCTAssertEqual(mockSecKey, secKey)
-    XCTAssertTrue(spyVault.getPrivateKeyWithIdentifierAlgorithmContextReasonCalled)
-    XCTAssertEqual(vaultAlgorithm, spyVault.getPrivateKeyWithIdentifierAlgorithmContextReasonReceivedArguments?.algorithm)
+    XCTAssertTrue(keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryCalled)
+    XCTAssertEqual(vaultAlgorithm, keyManagerProtocolSpy.getPrivateKeyWithIdentifierAlgorithmQueryReceivedArguments?.algorithm)
   }
 
   func testGetPeppeInitialVector() throws {
     let mockData: Data = .init()
-    spyVault.getSecretForServiceContextReasonReturnValue = mockData
+    secretManagerProtocolSpy.dataForKeyQueryReturnValue = mockData
     let data = try repository.getPepperInitialVector()
     XCTAssertEqual(mockData, data)
-    XCTAssertTrue(spyVault.getSecretForServiceContextReasonCalled)
+    XCTAssertTrue(secretManagerProtocolSpy.dataForKeyQueryCalled)
   }
 
   func testSetPepperInitialVector() throws {
     let mockData: Data = .init()
+    let mockAccessControl = try SecAccessControl.create(accessControlFlags: [], protection: kSecAttrAccessibleWhenUnlockedThisDeviceOnly)
     try repository.setPepperInitialVector(mockData)
-    XCTAssertTrue(spyVault.saveSecretForServiceAccessControlFlagsProtectionCanOverrideContextReasonCalled)
-    XCTAssertEqual(mockData, spyVault.saveSecretForServiceAccessControlFlagsProtectionCanOverrideContextReasonReceivedArguments?.data)
-    XCTAssertEqual(kSecAttrAccessibleWhenUnlockedThisDeviceOnly, spyVault.saveSecretForServiceAccessControlFlagsProtectionCanOverrideContextReasonReceivedArguments?.protection)
-    XCTAssertEqual(true, spyVault.saveSecretForServiceAccessControlFlagsProtectionCanOverrideContextReasonReceivedArguments?.canOverride)
+    XCTAssertTrue(secretManagerProtocolSpy.setForKeyQueryCalled)
+    XCTAssertEqual(mockData, secretManagerProtocolSpy.setForKeyQueryReceivedArguments?.value as? Data)
+    //swiftlint:disable force_cast
+    XCTAssertEqual(mockAccessControl, secretManagerProtocolSpy.setForKeyQueryReceivedArguments?.query?[kSecAttrAccessControl as String] as! SecAccessControl)
+    //swiftlint:enable force_cast
   }
 
   // MARK: Private
 
-  private let vaultAlgorithm: VaultAlgorithm = Vault.defaultAlgorithm
+  private let vaultAlgorithm: VaultAlgorithm = .eciesEncryptionStandardVariableIVX963SHA256AESGCM
 
   //swiftlint:disable all
+  private var secretManagerProtocolSpy: SecretManagerProtocolSpy!
+  private var keyManagerProtocolSpy: KeyManagerProtocolSpy!
   private var spyContext: LAContextProtocolSpy!
-  private var spyVault: VaultProtocolSpy!
   private var repository: PepperRepositoryProtocol!
   //swiftlint:enable all
 

@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITTheming
 import Factory
 import Foundation
@@ -47,7 +48,7 @@ public struct CredentialOfferDeclineConfirmationView: View {
             .frame(maxWidth: .infinity)
         })
         .disabled(viewModel.isLoading)
-        .buttonStyle(.secondaryProminant)
+        .buttonStyle(.secondary)
 
         Button(action: {
           Task {

@@ -92,35 +92,11 @@ public struct NetworkService {
     provider.request(target) { result in
       switch result {
       case .success(let response):
-        guard response.isSuccessful else { return completion(.failure(response.error)) }
+        guard response.isSuccessful else { return completion(.failure(NetworkError(response: response))) }
         return completion(.success(response))
       case .failure(let error):
-        switch error {
-        case .underlying(let error, _):
-          let underlyingCode: Int = if let underlyingError = (error as? AFError)?.underlyingError {
-            (underlyingError as NSError).code
-          } else if let alamofireError = error as? Alamofire.AFError {
-            (alamofireError as NSError).code
-          } else {
-            (error as NSError).code
-          }
-
-          if underlyingCode == -1003 {
-            return completion(.failure(NetworkError.hostnameNotFound))
-          }
-
-          if underlyingCode == -1020 || underlyingCode == -1009 {
-            return completion(.failure(NetworkError.noConnection))
-          }
-
-          if let afError = error.asAFError, afError.isServerTrustEvaluationError {
-            return completion(.failure(NetworkError.pinning))
-          }
-
-        default: break
-        }
-
-        return completion(.failure(error))
+        guard let networkError = NetworkError(moyaError: error) else { return completion(.failure(error)) }
+        return completion(.failure(networkError))
       }
     }
   }

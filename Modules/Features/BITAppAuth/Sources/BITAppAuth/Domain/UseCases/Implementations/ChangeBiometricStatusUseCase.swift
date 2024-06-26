@@ -5,8 +5,13 @@ import LocalAuthentication
 
 // MARK: - ChangeBiometricStatusError
 
-enum ChangeBiometricStatusError: Error {
+enum ChangeBiometricStatusError: String, Error, CustomStringConvertible {
   case userCancel
+  case biometricRetry
+
+  var description: String {
+    rawValue
+  }
 }
 
 // MARK: - ChangeBiometricStatusUseCase

@@ -1,7 +1,10 @@
 import BITCore
 import Factory
 import XCTest
+
 @testable import BITCredential
+@testable import BITCredentialShared
+@testable import BITCredentialSharedMocks
 
 // MARK: - DisplayLocalizableTests
 

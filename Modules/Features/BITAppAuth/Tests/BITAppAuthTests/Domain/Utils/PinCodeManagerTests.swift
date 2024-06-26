@@ -16,8 +16,10 @@ final class PinCodeManagerTests: XCTestCase {
     spyEncrypter = EncryptableSpy()
     spyPepperRepository = PepperRepositoryProtocolSpy()
     pinCodeManager = PinCodeManager(
-      pinCodeSize: pinCodeSize,
+      pinCodeSize: Self.pinCodeSize,
       encrypter: spyEncrypter,
+      encrypterLength: Self.encrypterLength,
+      pepperKeyDerivationAlgorithm: Self.keyDerivationAlgorithm,
       pepperRepository: spyPepperRepository)
   }
 
@@ -79,22 +81,27 @@ final class PinCodeManagerTests: XCTestCase {
     let mockPinCodeEncrypted: Data = .init()
     spyPepperRepository.getPepperKeyReturnValue = mockPepperKey
     spyPepperRepository.getPepperInitialVectorReturnValue = mockInitialVector
-    spyEncrypter.encryptWithDerivedKeyFromPrivateKeyDataInitialVectorReturnValue = mockPinCodeEncrypted
+    spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorReturnValue = mockPinCodeEncrypted
 
     let pinCodeEncrypted = try pinCodeManager.encrypt(pinCode)
     XCTAssertEqual(mockPinCodeEncrypted, pinCodeEncrypted)
     XCTAssertTrue(spyPepperRepository.getPepperKeyCalled)
     XCTAssertTrue(spyPepperRepository.getPepperInitialVectorCalled)
-    XCTAssertTrue(spyEncrypter.encryptWithDerivedKeyFromPrivateKeyDataInitialVectorCalled)
+    XCTAssertTrue(spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorCalled)
+    XCTAssertFalse(spyEncrypter.encryptWithSymmetricKeyInitialVectorCalled)
 
-    XCTAssertEqual(mockPepperKey, spyEncrypter.encryptWithDerivedKeyFromPrivateKeyDataInitialVectorReceivedArguments?.privateKey)
-    XCTAssertEqual(pinCodeData, spyEncrypter.encryptWithDerivedKeyFromPrivateKeyDataInitialVectorReceivedArguments?.data)
-    XCTAssertEqual(mockInitialVector, spyEncrypter.encryptWithDerivedKeyFromPrivateKeyDataInitialVectorReceivedArguments?.initialVector)
+    XCTAssertEqual(pinCodeData, spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorReceivedArguments?.data)
+    XCTAssertEqual(mockPepperKey, spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorReceivedArguments?.privateKey)
+    XCTAssertEqual(Self.encrypterLength, spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorReceivedArguments?.length)
+    XCTAssertEqual(Self.keyDerivationAlgorithm, spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorReceivedArguments?.derivationAlgorithm)
+    XCTAssertEqual(mockInitialVector, spyEncrypter.encryptWithAsymmetricKeyLengthDerivationAlgorithmInitialVectorReceivedArguments?.initialVector)
   }
 
   // MARK: Private
 
-  private let pinCodeSize = 6
+  private static let pinCodeSize = 6
+  private static let encrypterLength = 32
+  private static let keyDerivationAlgorithm = SecKeyAlgorithm.ecdhKeyExchangeStandardX963SHA256
 
   // swiftlint:disable all
   private var spyEncrypter: EncryptableSpy!

@@ -28,6 +28,10 @@ enum L10n {
   static let homeEmptyViewNoCredentialsScanText = L10n.tr("Localizable", "home_empty_view_no_credentials_scan_text", fallback: "Gratulation zur Theorieprüfung 🎉 Bitte SMS-Link anklicken oder QR-Code scannen, damit Sie Ihren elektronischen Lernfahrausweis in Ihre pilotWallet erhalten.")
   /// Ihr erster elektronischer Lernfahrausweis
   static let homeEmptyViewNoCredentialsTitle = L10n.tr("Localizable", "home_empty_view_no_credentials_title", fallback: "Ihr erster elektronischer Lernfahrausweis")
+  /// Alle anzeigen
+  static let homeLastActivityHeaderButton = L10n.tr("Localizable", "home_last_activity_header_button", fallback: "Alle anzeigen")
+  /// LETZTE AKTIVITÄT
+  static let homeLastActivityHeaderText = L10n.tr("Localizable", "home_last_activity_header_text", fallback: "LETZTE AKTIVITÄT")
   /// Scannen
   static let homeQrCodeScanButton = L10n.tr("Localizable", "home_qr_code_scan_button", fallback: "Scannen")
 }

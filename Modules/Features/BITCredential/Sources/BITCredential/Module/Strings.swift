@@ -10,8 +10,32 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 enum L10n {
+  /// Zurzeit sind keine Aktivitäten vorhanden
+  static let activitiesEmptyStateText = L10n.tr("Localizable", "activities_empty_state_text", fallback: "Zurzeit sind keine Aktivitäten vorhanden")
+  /// Leere Aktivitäten
+  static let activitiesEmptyStateTitle = L10n.tr("Localizable", "activities_empty_state_title", fallback: "Leere Aktivitäten")
+  /// Löschen
+  static let activitiesItemDeleteButton = L10n.tr("Localizable", "activities_item_delete_button", fallback: "Löschen")
+  /// Nachweis empfangen
+  static let activitiesItemSubtitleCredentialReceived = L10n.tr("Localizable", "activities_item_subtitle_credentialReceived", fallback: "Nachweis empfangen")
+  /// Nachweis präsentiert
+  static let activitiesItemSubtitlePresentationAccepted = L10n.tr("Localizable", "activities_item_subtitle_presentationAccepted", fallback: "Nachweis präsentiert")
+  /// Nachweis nicht präsentiert
+  static let activitiesItemSubtitlePresentationDeclined = L10n.tr("Localizable", "activities_item_subtitle_presentationDeclined", fallback: "Nachweis nicht präsentiert")
+  /// Aktivitäten
+  static let activitiesTitle = L10n.tr("Localizable", "activities_title", fallback: "Aktivitäten")
+  /// Angefragte Daten
+  static let activityDetailsClaimsTitle = L10n.tr("Localizable", "activity_details_claims_title", fallback: "Angefragte Daten")
+  /// Löschen
+  static let activityDetailsMenuDeleteText = L10n.tr("Localizable", "activity_details_menu_delete_text", fallback: "Löschen")
+  /// Überprüfer
+  static let activityDetailsVerifier = L10n.tr("Localizable", "activity_details_verifier", fallback: "Überprüfer")
   /// pilotWallet
   static let appName = L10n.tr("Localizable", "app_name", fallback: "pilotWallet")
+  /// Restliche Aktivitäten
+  static let credentialActivitiesFooterText = L10n.tr("Localizable", "credential_activities_footer_text", fallback: "Restliche Aktivitäten")
+  /// Letzte Aktivitäten
+  static let credentialActivitiesHeaderText = L10n.tr("Localizable", "credential_activities_header_text", fallback: "Letzte Aktivitäten")
   /// Abbrechen
   static let credentialDeleteCancelButton = L10n.tr("Localizable", "credential_delete_cancel_button", fallback: "Abbrechen")
   /// Nachweis entfernen
@@ -24,18 +48,18 @@ enum L10n {
   static let credentialDeleteText = L10n.tr("Localizable", "credential_delete_text", fallback: "Wollen Sie den ausgewählten Nachweis wirklich entfernen? Ein erneutes Hinzufügen dieses Nachweises ist danach aus Sicherheitsgründen nicht mehr möglich.\n\nIn dem Fall muss ein neuer Nachweis beim Strassenverkehrsamt bestellt werden.\n\nBeachten Sie, dass dabei alle Daten aus der pilotWallet gelöscht werden.")
   /// Nachweis endgültig entfernen
   static let credentialDeleteTitle = L10n.tr("Localizable", "credential_delete_title", fallback: "Nachweis endgültig entfernen")
-  /// Nachweisinfo
-  static let credentialDetailNavigationTitle = L10n.tr("Localizable", "credential_detail_navigation_title", fallback: "Nachweisinfo")
+  /// Inhalt Nachweis
+  static let credentialDetailNavigationTitle = L10n.tr("Localizable", "credential_detail_navigation_title", fallback: "Inhalt Nachweis")
   /// Nachweisinfo
   static let credentialDetailTitle = L10n.tr("Localizable", "credential_detail_title", fallback: "Nachweisinfo")
+  /// Aktivitäten
+  static let credentialMenuActivitiesText = L10n.tr("Localizable", "credential_menu_activities_text", fallback: "Aktivitäten")
   /// Nachweis entfernen
   static let credentialMenuDeleteText = L10n.tr("Localizable", "credential_menu_delete_text", fallback: "Nachweis entfernen")
-  /// Nachweisinfo
-  static let credentialMenuDetailsText = L10n.tr("Localizable", "credential_menu_details_text", fallback: "Nachweisinfo")
+  /// Inhalt Nachweis
+  static let credentialMenuDetailsText = L10n.tr("Localizable", "credential_menu_details_text", fallback: "Inhalt Nachweis")
   /// Polizeikontrolle
   static let credentialMenuPoliceControlText = L10n.tr("Localizable", "credential_menu_police_control_text", fallback: "Polizeikontrolle")
-  /// Nachweis
-  static let credentialNavigationTitle = L10n.tr("Localizable", "credential_navigation_title", fallback: "Nachweis")
   /// Akzeptieren
   static let credentialOfferAcceptButton = L10n.tr("Localizable", "credential_offer_acceptButton", fallback: "Akzeptieren")
   /// Inhalt des Nachweises
@@ -134,6 +158,10 @@ enum L10n {
   static let homeEmptyViewNoCredentialsScanText = L10n.tr("Localizable", "home_empty_view_no_credentials_scan_text", fallback: "Gratulation zur Theorieprüfung 🎉 Bitte SMS-Link anklicken oder QR-Code scannen, damit Sie Ihren elektronischen Lernfahrausweis in Ihre pilotWallet erhalten.")
   /// Ihr erster elektronischer Lernfahrausweis
   static let homeEmptyViewNoCredentialsTitle = L10n.tr("Localizable", "home_empty_view_no_credentials_title", fallback: "Ihr erster elektronischer Lernfahrausweis")
+  /// Alle anzeigen
+  static let homeLastActivityHeaderButton = L10n.tr("Localizable", "home_last_activity_header_button", fallback: "Alle anzeigen")
+  /// LETZTE AKTIVITÄT
+  static let homeLastActivityHeaderText = L10n.tr("Localizable", "home_last_activity_header_text", fallback: "LETZTE AKTIVITÄT")
   /// Scannen
   static let homeQrCodeScanButton = L10n.tr("Localizable", "home_qr_code_scan_button", fallback: "Scannen")
   /// Bitte weisen Sie diesen QR-Code nur bei Polizeikontrollen vor.  Mit diesem QR-Code können Sie die Daten Ihres Lernfahrausweises der Polizei übermitteln.

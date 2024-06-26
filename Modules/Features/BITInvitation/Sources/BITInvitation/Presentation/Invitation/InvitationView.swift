@@ -157,7 +157,7 @@ extension InvitationView {
           Label(L10n.globalBackHome, systemImage: "arrow.backward")
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.secondaryProminant)
+        .buttonStyle(.secondary)
 
         Button {
           Task {
@@ -254,7 +254,7 @@ extension InvitationView {
         Label(L10n.globalBackHome, systemImage: "arrow.backward")
           .frame(maxWidth: .infinity)
       }
-      .buttonStyle(.secondaryProminant)
+      .buttonStyle(.secondary)
     }
     .background(ThemingAssets.background.swiftUIColor)
   }

@@ -10,6 +10,28 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 enum L10n {
+  /// Fehlermeldungen teilen
+  static let dataAnalysisScreenTitle = L10n.tr("Localizable", "dataAnalysis_screenTitle", fallback: "Fehlermeldungen teilen")
+  /// Helfen Sie mit, die pilotWallet zu verbessern, indem Sie erlauben, dass folgende anonymisierte Fehlermeldungen dem Entwicklungsteam zur Verfügung stehen:
+  ///
+  ///
+  /// ✓ Allgemeine Fehlermeldungen
+  /// ✓ Kommunikationsfehler
+  /// ✓ App Absturz
+  ///
+  ///
+  /// Es werden nur anonymisierte Daten analysiert, die keinen Rückschluss auf Ihre Person erlauben.
+  static let dataAnalysisText = L10n.tr("Localizable", "dataAnalysis_text", fallback: "Helfen Sie mit, die pilotWallet zu verbessern, indem Sie erlauben, dass folgende anonymisierte Fehlermeldungen dem Entwicklungsteam zur Verfügung stehen:\n\n\n✓ Allgemeine Fehlermeldungen\n✓ Kommunikationsfehler\n✓ App Absturz\n\n\nEs werden nur anonymisierte Daten analysiert, die keinen Rückschluss auf Ihre Person erlauben.")
+  /// Analyse & Verbesserung
+  static let dataAnalysisTitle = L10n.tr("Localizable", "dataAnalysis_title", fallback: "Analyse & Verbesserung")
+  /// https://licencecheck.astra.admin.ch
+  static let getVerifiedLink = L10n.tr("Localizable", "get_verified_link", fallback: "https://licencecheck.astra.admin.ch")
+  /// Zum LicenceCheck
+  static let getVerifiedLinkText = L10n.tr("Localizable", "get_verified_link_text", fallback: "Zum LicenceCheck")
+  /// Ihr elektronischer Lernfahrausweis kann über den LicenceCheck, einer Webapplikation, von Ihrer Fahrbegleitung (Fahrlehrer/innen oder Familie und Freunde) kontrolliert und geprüft werden.
+  static let getVerifiedText = L10n.tr("Localizable", "get_verified_text", fallback: "Ihr elektronischer Lernfahrausweis kann über den LicenceCheck, einer Webapplikation, von Ihrer Fahrbegleitung (Fahrlehrer/innen oder Familie und Freunde) kontrolliert und geprüft werden.")
+  /// Verifizieren
+  static let getVerifiedTitle = L10n.tr("Localizable", "get_verified_title", fallback: "Verifizieren")
   /// App Version
   static let impressumAppVersion = L10n.tr("Localizable", "impressum_app_version", fallback: "App Version")
   /// Build Nummer
@@ -74,6 +96,8 @@ enum L10n {
   static let securitySettingsLoginTitle = L10n.tr("Localizable", "securitySettings_loginTitle", fallback: "Sicherheit")
   /// Anonymisierte Fehlermeldungen teilen
   static let securitySettingsShareAnalysis = L10n.tr("Localizable", "securitySettings_shareAnalysis", fallback: "Anonymisierte Fehlermeldungen teilen")
+  /// Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.
+  static let securitySettingsShareAnalysisText = L10n.tr("Localizable", "securitySettings_shareAnalysis_text", fallback: "Helfen Sie mit, Ihre pilotWallet zu verbessern. Erlauben Sie dafür die gelegentliche und anonyme Übermittlung der Diagnosedaten.")
   /// Datenschutz & Sicherheit
   static let securitySettingsTitle = L10n.tr("Localizable", "securitySettings_title", fallback: "Datenschutz & Sicherheit")
   /// App Version
@@ -86,6 +110,8 @@ enum L10n {
   static let settingsFeedback = L10n.tr("Localizable", "settings_feedback", fallback: "Feedback")
   /// https://findmind.ch/c/Ce39-nUQL
   static let settingsFeedbackLink = L10n.tr("Localizable", "settings_feedbackLink", fallback: "https://findmind.ch/c/Ce39-nUQL")
+  /// Wie kann ich kontrolliert werden?
+  static let settingsGetVerified = L10n.tr("Localizable", "settings_getVerified", fallback: "Wie kann ich kontrolliert werden?")
   /// Hilfe
   static let settingsHelp = L10n.tr("Localizable", "settings_help", fallback: "Hilfe")
   /// https://www.eid.admin.ch/de/hilfe-support

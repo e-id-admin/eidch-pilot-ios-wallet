@@ -1,3 +1,4 @@
+import BITCredentialShared
 import BITNetworking
 import BITSdJWT
 import Factory
@@ -38,6 +39,7 @@ extension ApiCredentialRepository: CredentialRepositoryProtocol {
     let raw: String = try await networkService.request(CredentialEndpoint.status(url: url))
     return try JWT(raw: raw)
   }
+
 }
 
 // MARK: - CRUD

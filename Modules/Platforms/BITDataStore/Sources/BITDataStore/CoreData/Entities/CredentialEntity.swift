@@ -12,6 +12,7 @@ public class CredentialEntity: NSManagedObject {
   @NSManaged public var issuerDisplays: NSSet?
   @NSManaged public var rawCredentials: NSSet?
   @NSManaged public var displays: NSSet?
+  @NSManaged public var activities: NSSet?
 
 }
 
@@ -143,5 +144,27 @@ extension CredentialEntity {
   @objc(removeDisplays:)
   @NSManaged
   public func removeFromDisplays(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for activities
+
+extension CredentialEntity {
+
+  @objc(addActivitiesObject:)
+  @NSManaged
+  public func addToActivities(_ value: ActivityEntity)
+
+  @objc(removeActivitiesObject:)
+  @NSManaged
+  public func removeFromActivities(_ value: ActivityEntity)
+
+  @objc(addActivities:)
+  @NSManaged
+  public func addToActivities(_ values: NSSet)
+
+  @objc(removeActivities:)
+  @NSManaged
+  public func removeFromActivities(_ values: NSSet)
 
 }

@@ -18,13 +18,16 @@ SPM_DIRS := Modules/Platforms/BITCore \
 			Modules/Platforms/BITDeeplink \
 			Modules/Platforms/BITSdJWT \
 			Modules/Platforms/BITLocalAuthentication \
+			Modules/Platforms/BITAnalytics \
+			Modules/Platforms/BITSecurity \
 			Modules/Features/BITInvitation \
 			Modules/Features/BITOnboarding \
 			Modules/Features/BITAppAuth \
 			Modules/Features/BITCredential \
 			Modules/Features/BITSettings \
 			Modules/Features/BITPresentation \
-			Modules/Features/BITHome
+			Modules/Features/BITHome \
+			Modules/Features/BITActivity \
 
 install:
 	@echo "=> Installing tools"

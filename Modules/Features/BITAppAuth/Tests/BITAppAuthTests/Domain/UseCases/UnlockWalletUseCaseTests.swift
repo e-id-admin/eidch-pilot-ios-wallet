@@ -16,28 +16,30 @@ final class UnlockWalletUseCaseTests: XCTestCase {
   override func setUp() {
     super.setUp()
     processInfoService = ProcessInfoServiceProtocolSpy()
-    vault = VaultProtocolSpy()
-    let repository = SecretsRepository(vault: vault, processInfoService: processInfoService)
+    keyManagerProtocolSpy = KeyManagerProtocolSpy()
+    secretManagerProtocolSpy = SecretManagerProtocolSpy()
+    let repository = SecretsRepository(keyManager: keyManagerProtocolSpy, secretManager: secretManagerProtocolSpy, processInfoService: processInfoService)
     useCase = UnlockWalletUseCase(repository: repository)
   }
 
   func testUnlockWallet() throws {
     try useCase.execute()
 
-    vault.saveSecretForKeyClosure = { value, _ in
+    secretManagerProtocolSpy.setForKeyQueryClosure = { value, _, _ in
       XCTAssertNil(value)
     }
 
-    XCTAssertTrue(vault.deleteSecretForCalled)
-    XCTAssertEqual(vault.deleteSecretForCallsCount, 1)
+    XCTAssertTrue(secretManagerProtocolSpy.removeObjectForKeyQueryCalled)
+    XCTAssertEqual(secretManagerProtocolSpy.removeObjectForKeyQueryCallsCount, 1)
   }
 
   // MARK: Private
 
   // swiftlint:disable all
   private var useCase: UnlockWalletUseCase!
+  private var keyManagerProtocolSpy: KeyManagerProtocolSpy!
   private var processInfoService: ProcessInfoServiceProtocolSpy!
-  private var vault: VaultProtocolSpy!
+  private var secretManagerProtocolSpy: SecretManagerProtocolSpy!
   // swiftlint:enable all
 
 }

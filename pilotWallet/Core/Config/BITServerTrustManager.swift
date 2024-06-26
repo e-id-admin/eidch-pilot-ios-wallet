@@ -30,28 +30,33 @@ class BITServerTrustManager: WildcardServerTrustManager {
 extension BITServerTrustManager {
   fileprivate enum TrustEvaluator: CaseIterable {
     case admin
+    case dynatrace
 
     // MARK: Internal
 
     var domain: Domain {
       switch self {
+      case .dynatrace: Domain.mamManagedBitAdminCh
       case .admin: Domain.astraAdminCh
       }
     }
 
     var certificate: [Certificate] {
       switch self {
-      case .admin: Certificate.allCases
+      case .dynatrace: [.qvrca2g3]
+      case .admin: [.quoVadisRootCA2G3, .digiCertGlobalRootG2]
       }
     }
   }
 
   fileprivate enum Domain: String, CaseIterable {
     case astraAdminCh = "*.astra.admin.ch"
+    case mamManagedBitAdminCh = "mam-managed.bit.admin.ch"
   }
 
   fileprivate enum Certificate: String, CaseIterable {
-    case quoVadisRootCA2G3 = "QuoVadisRootCA2G3"
-    case digiCertGlobalRootG2 = "DigiCertGlobalRootG2"
+    case quoVadisRootCA2G3 = "QuoVadisRootCA2G3" // Old astra
+    case digiCertGlobalRootG2 = "DigiCertGlobalRootG2" // New astra
+    case qvrca2g3 = "qvrca2g3" // Dynatrace
   }
 }

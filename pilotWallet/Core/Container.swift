@@ -10,7 +10,15 @@ extension Container {
 
 extension Container {
 
+  var userInactivityTimeout: Factory<TimeInterval> {
+    self { 60 * 2 }
+  }
+
   var splashScreenRouter: Factory<RootRouter> {
+    self { RootRouter() }
+  }
+
+  var rootRouter: Factory<RootRouter> {
     self { RootRouter() }
   }
 

@@ -19,6 +19,7 @@ public struct PresentationErrorView: View {
     self.message = message ?? L10n.presentationErrorMessage
     closeAction = close
     retryAction = retry
+    viewModel = Container.shared.presentationErrorViewModel()
   }
 
   // MARK: Public
@@ -31,7 +32,7 @@ public struct PresentationErrorView: View {
 
   // MARK: Private
 
-  private var date: Date = .init()
+  private var viewModel: PresentationErrorViewModel
   private var title: String
   private var message: String
   private var closeAction: () -> Void
@@ -48,7 +49,7 @@ public struct PresentationErrorView: View {
             .foregroundColor(.white)
             .padding(.top, .x10)
 
-          Text(DateFormatter.presentationResult.string(from: date))
+          Text(viewModel.formattedDate)
             .font(.custom.subheadline)
           Text(title)
             .tracking(-0.5)

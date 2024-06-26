@@ -23,9 +23,13 @@ public struct FetchRequestObjectUseCase: FetchRequestObjectUseCaseProtocol {
   public func execute(_ url: URL) async throws -> RequestObject {
     do {
       return try await repository.fetchRequestObject(from: url)
-    } catch is DecodingError, NetworkError.hostnameNotFound {
+    } catch is DecodingError {
       throw FetchRequestObjectError.invalidPresentationInvitation
     } catch {
+      guard let err = error as? NetworkError else { throw error }
+      if err.status == .hostnameNotFound {
+        throw FetchRequestObjectError.invalidPresentationInvitation
+      }
       throw error
     }
   }

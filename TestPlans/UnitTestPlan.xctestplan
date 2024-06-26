@@ -162,6 +162,21 @@
         "identifier" : "BITLocalAuthenticationTests",
         "name" : "BITLocalAuthenticationTests"
       }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Modules\/Platforms\/BITAnalytics",
+        "identifier" : "BITAnalyticsTests",
+        "name" : "BITAnalyticsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules\/Features\/BITActivity",
+        "identifier" : "BITActivityTests",
+        "name" : "BITActivityTests"
+      }
     }
   ],
   "version" : 1

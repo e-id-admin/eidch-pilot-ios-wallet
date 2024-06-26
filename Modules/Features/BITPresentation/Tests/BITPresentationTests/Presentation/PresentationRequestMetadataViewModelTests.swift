@@ -43,13 +43,13 @@ class PresentationRequestMetadataViewModelTests: XCTestCase {
     XCTAssertFalse(completed)
     XCTAssertTrue(viewModel.isResultViewPresented)
     XCTAssertFalse(viewModel.isRequestDeclineViewPresented)
-    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCalled)
-    XCTAssertEqual(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCallsCount, 1)
-    XCTAssertFalse(denyPresentationUseCase.executeRequestObjectCalled)
+    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCalled)
+    XCTAssertEqual(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCallsCount, 1)
+    XCTAssertFalse(denyPresentationUseCase.executeForRequestObjectAndCalled)
   }
 
   func testFailurePath() async throws {
-    submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataThrowableError = TestingError.error
+    submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataThrowableError = TestingError.error
 
     await viewModel.send(event: .submit)
 
@@ -58,9 +58,9 @@ class PresentationRequestMetadataViewModelTests: XCTestCase {
     XCTAssertFalse(viewModel.isRequestDeclineViewPresented)
     XCTAssertEqual(viewModel.state, .error)
     XCTAssertNotNil(viewModel.stateError)
-    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCalled)
-    XCTAssertEqual(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCallsCount, 1)
-    XCTAssertFalse(denyPresentationUseCase.executeRequestObjectCalled)
+    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCalled)
+    XCTAssertEqual(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCallsCount, 1)
+    XCTAssertFalse(denyPresentationUseCase.executeForRequestObjectAndCalled)
     XCTAssertFalse(completed)
   }
 
@@ -71,8 +71,8 @@ class PresentationRequestMetadataViewModelTests: XCTestCase {
     XCTAssertFalse(completed)
     XCTAssertFalse(viewModel.isResultViewPresented)
     XCTAssertTrue(viewModel.isRequestDeclineViewPresented)
-    XCTAssertTrue(denyPresentationUseCase.executeRequestObjectCalled)
-    XCTAssertEqual(denyPresentationUseCase.executeRequestObjectCallsCount, 1)
+    XCTAssertTrue(denyPresentationUseCase.executeForRequestObjectAndCalled)
+    XCTAssertEqual(denyPresentationUseCase.executeForRequestObjectAndCallsCount, 1)
   }
 
   func testClose() async throws {
@@ -81,13 +81,13 @@ class PresentationRequestMetadataViewModelTests: XCTestCase {
     XCTAssertFalse(viewModel.isLoading)
     XCTAssertFalse(viewModel.isResultViewPresented)
     XCTAssertFalse(viewModel.isRequestDeclineViewPresented)
-    XCTAssertFalse(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCalled)
-    XCTAssertFalse(denyPresentationUseCase.executeRequestObjectCalled)
+    XCTAssertFalse(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCalled)
+    XCTAssertFalse(denyPresentationUseCase.executeForRequestObjectAndCalled)
     XCTAssertTrue(completed)
   }
 
   func test_presentationSubmit_suspendedCredential() async throws {
-    submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataThrowableError = SubmitPresentationError.credentialInvalid
+    submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataThrowableError = SubmitPresentationError.credentialInvalid
 
     await viewModel.send(event: .submit)
 
@@ -96,12 +96,12 @@ class PresentationRequestMetadataViewModelTests: XCTestCase {
     XCTAssertFalse(viewModel.isRequestDeclineViewPresented)
     XCTAssertEqual(viewModel.state, .invalidCredentialError)
     XCTAssertNotNil(viewModel.stateError)
-    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCalled)
+    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCalled)
     XCTAssertFalse(completed)
   }
 
   func test_presentationSubmit_revokedCredential() async throws {
-    submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataThrowableError = SubmitPresentationError.credentialInvalid
+    submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataThrowableError = SubmitPresentationError.credentialInvalid
 
     await viewModel.send(event: .submit)
 
@@ -110,7 +110,7 @@ class PresentationRequestMetadataViewModelTests: XCTestCase {
     XCTAssertFalse(viewModel.isRequestDeclineViewPresented)
     XCTAssertEqual(viewModel.state, .invalidCredentialError)
     XCTAssertNotNil(viewModel.stateError)
-    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectRawCredentialPresentationMetadataCalled)
+    XCTAssertTrue(submitPresentationUseCase.executeRequestObjectCredentialPresentationMetadataCalled)
     XCTAssertFalse(completed)
   }
 

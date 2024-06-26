@@ -1,3 +1,4 @@
+import BITActivity
 import BITCore
 import BITCredential
 import BITInvitation
@@ -5,9 +6,10 @@ import BITSettings
 import BITTheming
 import Factory
 import Foundation
+import Refresher
 import SwiftUI
 
-// MARK: - HomeViewComposer
+// MARK: - HomeComposerView
 
 public struct HomeComposerView: View {
 
@@ -50,8 +52,15 @@ public struct HomeComposerView: View {
         case .results:
           VStack {
             if !viewModel.credentials.isEmpty {
-              CredentialCardStack(credentials: viewModel.credentials)
-              Spacer()
+              CredentialCardStack(credentials: viewModel.credentials, isPresented: $viewModel.isCredentialDetailPresented)
+              Spacer(minLength: .x10)
+
+              if let activity = viewModel.lastActivity {
+                LastActivityView(
+                  activity,
+                  onTapActivity: viewModel.showActivityDetails,
+                  onTapHeader: viewModel.showActivitiesList)
+              }
             }
           }
           .padding(.x4)
@@ -72,6 +81,21 @@ public struct HomeComposerView: View {
         NavigationLink(destination: InvitationView(isPresented: $viewModel.isScannerPresented), isActive: $viewModel.isScannerPresented) {
           EmptyView()
         }
+
+        if let credential = viewModel.lastActivityCredential {
+          NavigationLink(destination: CredentialActivitiesView(credential, isPresented: $viewModel.isActivitiesListPresented), isActive: $viewModel.isActivitiesListPresented) {
+            EmptyView()
+          }
+        }
+
+        if let activity = viewModel.lastActivity {
+          NavigationLink(destination: ActivityDetailView(activity: activity, isPresented: $viewModel.isActivityDetailPresented), isActive: $viewModel.isActivityDetailPresented) {
+            EmptyView()
+          }
+        }
+      }
+      .refresher {
+        await viewModel.send(event: .checkCredentialsStatus)
       }
 
       Button {
@@ -99,9 +123,4 @@ public struct HomeComposerView: View {
       }
     }
   }
-
-}
-
-#Preview {
-  HomeComposerView(viewModel: HomeModule().viewModel)
 }

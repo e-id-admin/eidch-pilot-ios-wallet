@@ -1,24 +1,32 @@
 import BITAppAuth
+import BITTheming
+import Factory
 import SwiftUI
+
+// MARK: - PinCodeStepView
 
 struct PinCodeStepView: View {
 
   @Binding var pinCode: PinCode
+  @Binding var index: Int
+
+  var pageCount: Int
   var isKeyPadDisabled: Bool = false
 
   var body: some View {
     VStack(alignment: .leading) {
       StepViewHeader()
 
-      Text(L10n.onboardingPinCodeTitle)
-        .font(.custom.title)
-        .multilineTextAlignment(.leading)
-      PinCodeView(pinCode: $pinCode, state: .normal, text: L10n.onboardingPinCodeText, isKeyPadDisabled: isKeyPadDisabled)
+      OnboardingPinCodeView(
+        pinCode: $pinCode,
+        state: .normal,
+        text: L10n.onboardingPinCodeTitle,
+        subtitle: L10n.onboardingPinCodeText,
+        isKeyPadDisabled: isKeyPadDisabled,
+        pageCount: pageCount,
+        index: $index)
     }
     .padding(.x4)
   }
-}
 
-#Preview {
-  PinCodeStepView(pinCode: .constant("1234"))
 }

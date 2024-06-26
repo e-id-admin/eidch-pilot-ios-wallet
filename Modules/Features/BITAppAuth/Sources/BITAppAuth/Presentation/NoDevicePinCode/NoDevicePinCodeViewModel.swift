@@ -2,6 +2,14 @@ import BITCore
 import Factory
 import Foundation
 
+// MARK: - NoDevicePinCodeDelegate
+
+public protocol NoDevicePinCodeDelegate: AnyObject {
+  func didCompleteNoDevicePinCode()
+}
+
+// MARK: - NoDevicePinCodeViewModel
+
 public class NoDevicePinCodeViewModel {
 
   // MARK: Lifecycle
@@ -13,9 +21,9 @@ public class NoDevicePinCodeViewModel {
     configureObservers()
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  var onComplete: (() -> Void)?
+  public weak var delegate: NoDevicePinCodeDelegate?
 
   // MARK: Private
 
@@ -26,7 +34,7 @@ public class NoDevicePinCodeViewModel {
     NotificationCenter.default.addObserver(forName: .willEnterForeground, object: nil, queue: .main) { [weak self] _ in
       guard let self, hasDevicePinUseCase.execute() else { return }
       routes.close(onComplete: nil)
-      onComplete?()
+      delegate?.didCompleteNoDevicePinCode()
     }
   }
 
