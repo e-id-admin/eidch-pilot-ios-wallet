@@ -1,3 +1,5 @@
+import BITAnalytics
+import Factory
 import Foundation
 import JOSESwift
 
@@ -7,7 +9,9 @@ public class JWTManager {
 
   // MARK: Lifecycle
 
-  public init() {}
+  public init(analytics: AnalyticsProtocol = Container.shared.analytics()) {
+    self.analytics = analytics
+  }
 
   // MARK: Public
 
@@ -17,9 +21,14 @@ public class JWTManager {
 
   enum JWTError: Error {
     case invalidData
-    case jwsCreationError
+    case uninitializedSigner
+    case jwsCreationError(baseError: Error)
     case verifierCreationError
   }
+
+  // MARK: Private
+
+  private let analytics: AnalyticsProtocol
 
 }
 
@@ -47,12 +56,19 @@ extension JWTManager: JWTManageable {
     let header = JWSHeader(algorithm: signatureAlgorithm, kid: did, type: "JWT")
     let payload = Payload(payloadData)
 
-    guard
-      let signer = Signer(signingAlgorithm: signatureAlgorithm, key: privateKey),
-      let jws = try? JWS(header: header, payload: payload, signer: signer)
-    else { throw JWTError.jwsCreationError }
-
-    return try JWT(raw: jws.compactSerializedString)
+    guard let signer = Signer(signingAlgorithm: signatureAlgorithm, key: privateKey) else {
+      let uninitializedSignerError = JWTError.uninitializedSigner
+      analytics.log(uninitializedSignerError)
+      throw uninitializedSignerError
+    }
+    do {
+      let jws = try JWS(header: header, payload: payload, signer: signer)
+      return try JWT(raw: jws.compactSerializedString)
+    } catch {
+      let jwsCreationError = JWTError.jwsCreationError(baseError: error)
+      analytics.log(jwsCreationError)
+      throw jwsCreationError
+    }
   }
 
   public func hasValidSignature(jwt: JWT, publicKey: SecKey) -> Bool {
